@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+	<title>DKRoller - web dice roller</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta content="width=device-width,
+				   initial-scale=1,
+				   maximum-scale=1,
+				   minimum-scale=1,
+				   user-scalable=no" name="viewport" />
+
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://backbonejs.org/backbone-min.js"></script>
+    <script src="roller.js"></script>
+    <link href="style.css" rel="stylesheet" media="screen" type="text/css" />
+</head>
+<body>
+<main id="roller">
+	<section id="left">
+		<h1>Dice</h1>
+		<ul id="dice">
+			<li id="namer"><input type="text" value="Describe this roll" id="desc"/></li>
+			<li class="d20">d4  <input type="text" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d6  <input type="text" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d8  <input type="text" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d10 <input type="text" id="d10s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d12 <input type="text" id="d12s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d20 <input type="text" id="d20s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li class="d20">d100<input type="text" id="d100s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+			<li id="roller"><input type="button" id="roll" value="Roll!"/><input type="button" value="" id="settings"/></li>
+		</ul>
+		<ul id="options">
+			<li><input type="button" id="exalted" value="exalted"/><input type="button" id="wod" value="WoD"/><input type="button" id="dnd" value="D&D"/></li>
+			<li>
+				<input type="checkbox" id="total" title="Sum-up the total value of the roll (e.g. D&D damage)">
+				<label for="total">Total</label>
+			</li>
+			<li>
+				<input type="checkbox" id="xhighest"/>
+				<input type="text" id="nhighest" value="0" maxlength="3" size="2"/>
+				<label for="xhighest"> highest</label>
+			</li>
+			<li>
+				<input type="checkbox" id="threshold" title='Ignore dice that roll lower than this amount, count the number of "successes" (White Wolf)'/>
+				<label for="threshold">Target</label>
+				<input type="text" maxlength="2" size="2" value="7" id="targetNumber"/>
+			</li>
+			<li>
+				<input type="checkbox" id="doubles" title='10s count twice'/>
+				<label for="doubles">Rule of 10</label>
+			</li>
+			<li>
+				<input type="checkbox" id="rerolls" title='Reroll dice that match or exceed this value'/>
+				<label for="rerolls">X-again</label>
+				<input type="text" maxlength="2" size="2" value="10" id="xagain"/>
+			</li>
+			<li>
+				<input type="button" value="Clear results" id="clear"/>
+			</li>
+			<li>
+				<input type="button" value="Show Hidden" id="show-hidden"/>
+			</li>
+		</ul>
+	</section>
+	<section id="right">
+		<h1>Results</h1><!--div id="contact">Got comments or suggestions? <a href="#" id="mail">Tell me about it</a>.</div-->
+		<ul id="results"></ul>
+	</section>
+</main>
+
+<p id="copy">Created by Fata-Ku</p>
+<script type="text/html" id="liTemplate">
+	<%
+	var successes = 0, total = 0;
+	_.each(results, function(roll, key, list){
+		var c = "";
+		if(roll === 1)												{c = "bad";}
+		if(roll === 20)												{c = "good";}
+		if(rules.get("threshold") && roll>= rules.get("threshold"))	{c = "good"; successes++;}
+		if(rules.get("doubles") && roll === 10)						{c += " double"; successes++;}
+		if(rules.get("rerolls")>1 && roll>=rules.get("rerolls")) 	{c += " reroll";}
+		if(key < rules.get("xhighest"))								{c += " highest";}
+
+		if(rules.get("total") && (!rules.get("xhighest") || key < rules.get("xhighest"))){total += roll}
+
+		%><span class="<%-c%>"><%-roll%></span><%-((key===list.length-1)?"":", ")%>
+	<% }); %>
+
+	<%if(rules.get("threshold")){%><span class="ps"> :: <%-successes%> successes</span><%}%>
+	<%if(rules.get("total")){%><span class="ps"> :: <%-total%> total</span><%}%>
+	<img class="close" src="icons/<%-(hidden)?"hide":"hidden"%>.png"/>
+</script>
+</body>
+</html>
