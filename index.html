@@ -13,8 +13,8 @@
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="http://backbonejs.org/backbone-min.js"></script>
-    <script src="roller.js"></script>
-    <link href="style.css" rel="stylesheet" media="screen" type="text/css" />
+    <script src="assets/roller.js"></script>
+    <link href="assets/style.css" rel="stylesheet" media="screen" type="text/css" />
 </head>
 <body>
 <main id="roller">
@@ -90,7 +90,7 @@
 
 	<%if(rules.get("threshold")){%><span class="ps"> :: <%-successes%> successes</span><%}%>
 	<%if(rules.get("total")){%><span class="ps"> :: <%-total%> total</span><%}%>
-	<img class="close" src="icons/<%-(hidden)?"hide":"hidden"%>.png"/>
+	<span class="close" title="<%-(!hidden)?"hide":"show"%>">N</span>
 </script>
 </body>
 </html>
