@@ -1,13 +1,44 @@
 $(function(){
 
+	var counter = 0, settings, rollsList;
+
 	Backbone.sync = function(method, model){
 		if(window.console && console.log) console.log(method +" : ", model);
-		model.id = 1;
+
+		if(model.attributes && model.attributes.type === "settings"){
+			switch(method){
+				case "read":
+					var s = localStorage['settings'];
+					if(s) settings = new SettingsModel(JSON.parse(s));
+					break;
+				case "create": model.id="settings"
+				case "update": localStorage['settings'] = model.toJSON(); break;
+				case "delete":  break;
+				default: console.error("Unsupported method: " + method);
+			}
+			localStorage['settings'] = JSON.stringify(model);
+			return 0;
+		}
+
 		switch(method){
-			case "update":  break;
-			case "create":  break;
+			case "read": 
+				var i = 0, roll = localStorage["roll0"];
+				while(roll){
+					roll = localStorage["roll"+(i++)];
+					if(roll){
+						roll = JSON.parse(roll);
+						roll.model = model.models[0];
+						console.log(model, roll);
+						rollsList.create({results:roll.results, title:roll.title, order:roll.order});
+					}else{
+						counter = i-1;
+						break;
+					}
+				}
+				break;
+			case "create": model.id = counter++; 
+			case "update": localStorage['roll'+model.id] = JSON.stringify(model); break;
 			case "delete":  break;
-			case "read":  break;
 			default: console.error("Unsupported method: " + method);
 		}
 	};
@@ -15,14 +46,14 @@ $(function(){
 
 	var SettingsModel = Backbone.Model.extend({
 		
-		url: "roller.php",
 		defaults:function(){
 			return {
 				xhighest: 0,
 				total: 0,
 				threshold: 0,
 				doubles: 0,
-				rerolls: 0
+				rerolls: 0,
+				type: "settings"
 			}
 		}, update: function(settings){
 			_.each(settings, function(value, key, list){
@@ -31,11 +62,11 @@ $(function(){
 		}
 	});
 
-	var settings = new SettingsModel;
+	settings = new SettingsModel;
+	settings.fetch();
 
 	var Roll = Backbone.Model.extend({
 
-		url: "roller.php",
 		defaults:function(){
 			return {
 				title: "empty roll...",
@@ -43,7 +74,7 @@ $(function(){
 				hidden: false,
 				rules:settings,
 				results:[],
-				url: "roller.php"
+				type: "roll"
 			};
 		},
 
@@ -59,7 +90,6 @@ $(function(){
 
 	var List = Backbone.Collection.extend({
 		model: Roll,
-		url:"roll.php",
 		hidden: function(){
 			return this.where({hidden: true});
 		},
@@ -71,7 +101,7 @@ $(function(){
 			return this.last().get('order');
 		},comparator: "order"
 	});
-	var rollsList = new List;
+	rollsList = new List;
 
 	var RollView = Backbone.View.extend({
 		tagName:"li",
@@ -107,6 +137,7 @@ $(function(){
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
 			"click #show-hidden" : "toggleHidden"
+
 		},toggleOptions:function(e){
 			$('#options').toggle();
 			$("#settings").toggleClass("on");
