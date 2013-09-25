@@ -8,7 +8,7 @@ li					{font-size: 1.2em; line-height: 24px; background:#eee;
 li:nth-child(2n+1)	{background: #e0e0e0;}
 li:hover			{background: #f7f7f7;}
 
-.ps					{color: #999;}
+.ps					{color: #999; white-space: pre;}
 li:hover .ps		{color: #555;}
 
 input[disabled]		{color: #999;}
@@ -106,9 +106,4 @@ iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width
 @media (max-width: 600px){
 	#right			{left: 35%;}
 	#left			{width: 35%;}
-}
-
-@media (orientation: portrait){
-	#left			{width: 40%;}
-	#right			{left: 40%;}
 }

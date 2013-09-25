@@ -130,6 +130,7 @@ $(function(){
 		events: {
 			"click #settings" : "toggleOptions",
 			"change input:text" : "updateSettings",
+			"click #dice input":"numberFocus",
 			"click input:checkbox" : "updateSettings",
 			"click #clear" : "hideRolls",
 			"click #exalted" : "setExalted",
@@ -144,6 +145,8 @@ $(function(){
 			if(!$("#settings").is('.on')) this.updateSettings();
 		},toggleHidden:function(){
 			this.$el.toggleClass("show-hidden");
+		},numberFocus:function(e){
+			$(e.target).select();
 		},setExalted : function(e){
 			$("#threshold, #doubles").attr('checked', 'checked');
 			$('#targetNumber').val(7);
