@@ -27,9 +27,11 @@ $(function(){
 					roll = localStorage["roll"+(i++)];
 					if(roll){
 						roll = JSON.parse(roll);
+						console.log("rules:", roll.rules);
 						roll.model = model.models[0];
-						console.log(model, roll);
-						rollsList.create({results:roll.results, title:roll.title, order:roll.order, hidden:roll.hidden});
+						roll.rules = new SettingsModel(roll.rules);
+						console.log(roll);
+						rollsList.create(roll);
 					}else{
 						counter = i-1;
 						break;
