@@ -1,12 +1,13 @@
 <?php
 use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 use Dicemat\Chat;
 
     require dirname(__DIR__) . '/vendor/autoload.php';
-    echo "Arg?";
+
     $server = IoServer::factory(
-        new Chat(),
-        8080
+        new WsServer(new Chat()),
+        8888
     );
 
     $server->run();
