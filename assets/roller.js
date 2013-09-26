@@ -1,6 +1,20 @@
 $(function(){
 
-	var counter = 0, settings, rollsList;
+	var counter = 0, settings, rollsList, ws;
+
+	ws = new WebSocket('ws://horionforge.com:8888');
+	ws.onopen = function(data){
+		console.log("connection to Horizonforge opened", ws, arguments);
+	}
+	ws.onclose = function(){
+		console.log(arguments);
+	}
+	ws.onmessage = function(){
+		console.log(arguments);
+	}
+	ws.onerror = function(){
+		console.log(arguments);
+	}
 
 	Backbone.sync = function(method, model){
 		if(window.console && console.log) console.log(method +" : ", model);
@@ -27,7 +41,6 @@ $(function(){
 					roll = localStorage["roll"+(i++)];
 					if(roll){
 						roll = JSON.parse(roll);
-						console.log("rules:", roll.rules);
 						roll.model = model.models[0];
 						roll.rules = new SettingsModel(roll.rules);
 						console.log(roll);
