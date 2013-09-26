@@ -2,20 +2,6 @@ $(function(){
 
 	var counter = 0, settings, rollsList, ws;
 
-	ws = new WebSocket('ws://horionforge.com:8888');
-	ws.onopen = function(data){
-		console.log("connection to Horizonforge opened", ws, arguments);
-	}
-	ws.onclose = function(){
-		console.log(arguments);
-	}
-	ws.onmessage = function(){
-		console.log(arguments);
-	}
-	ws.onerror = function(){
-		console.log(arguments);
-	}
-
 	Backbone.sync = function(method, model){
 		if(window.console && console.log) console.log(method +" : ", model);
 
@@ -224,5 +210,25 @@ $(function(){
 			rollsList.fetch();
 		}
 	});
+
+	ws = new WebSocket('ws://horizonforge.com:8888');
+	ws.onopen = function(data){
+		console.log("connection to Horizonforge opened", ws, arguments);
+	}
+	ws.onclose = function(){
+		console.log(arguments);
+	}
+	ws.onmessage = function(msg){
+		console.log(JSON.parse(msg.data));
+
+	}
+	ws.onerror = function(){
+		console.log(arguments);
+	}
+	ws.ping = function(){
+		this.send(JSON.stringify(settings));
+	}
+
+	window.ws = ws;
 	window.diceRoller = new DiceRoller;
 });
