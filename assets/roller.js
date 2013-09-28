@@ -29,7 +29,6 @@ $(function(){
 						roll = JSON.parse(roll);
 						roll.model = model.models[0];
 						roll.rules = new SettingsModel(roll.rules);
-						console.log(roll);
 						rollsList.create(roll);
 					}else{
 						counter = i-1;
@@ -201,7 +200,9 @@ $(function(){
 			}
 
 			if(settings.get("xhighest")) results.sort(function(a, b){return a<b;});
-			if(rolled) rollsList.create({results: results});
+			var roll = {results: results, rules: settings};
+			if(rolled) rollsList.create(roll);
+			ws.send(JSON.stringify(roll));
 		},
 
 		render:function(){},
@@ -211,22 +212,30 @@ $(function(){
 		}
 	});
 
-	ws = new WebSocket('ws://horizonforge.com:8888');
+	ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
 		console.log("connection to Horizonforge opened", ws, arguments);
+		var id = $('#desc').val();
+		if(id) ws.send('{"type":"identify", "id":"' + id + '"}');
 	}
 	ws.onclose = function(){
+		//attempt to reconnect
+		ws = new WebSocket('ws://localhost:8888');
 		console.log(arguments);
 	}
 	ws.onmessage = function(msg){
 		console.log(JSON.parse(msg.data));
+		var roll = JSON.parse(msg.data);
 
+		if(roll.type === "roll"){
+			roll.model = new Roll;
+			roll.rules = new SettingsModel(roll.rules);
+			rollsList.create(roll);
+			console.log("::Network Roll::", roll);
+		}else{alert("non-roll-type message recieved");}
 	}
 	ws.onerror = function(){
 		console.log(arguments);
-	}
-	ws.ping = function(){
-		this.send(JSON.stringify(settings));
 	}
 
 	window.ws = ws;
