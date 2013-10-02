@@ -42,6 +42,7 @@ class Chat implements MessageComponentInterface{
 					if($this->broacasters[$cli->resourceId]['name'] === $req->id){
 						echo $this->broacasters[$cli->resourceId]['name'];
 						array_push($this->broacasters[$cli->resourceId]['clients'], $from);
+						$cli->send('{"type":"connect", "id":"'.$this->broacasters[$from->resourceId]['name'] .'", "avatar":""}');
 					}
 				}
 				echo PHP_EOL;

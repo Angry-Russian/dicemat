@@ -5,7 +5,7 @@ $(function(){
 		return Math.floor(Math.random()*n)
 	}
 	function reidentify(){
-		if($('#desc').val()) ws.send('{"type":"identify", "id":"' + $('#desc').val() + '"}');
+		if($('#desc').val()) ws.send('{"type":"identify", "id":"' + ($('#desc').val()||"Anonymous") + '"}');
 	}
 	Backbone.sync = function(method, model){
 		//if(window.console && console.log) console.log(method +" : ", model);
@@ -242,8 +242,7 @@ $(function(){
 		console.log(arguments);
 	}
 
-	window.ws = ws;
-	window.diceRoller = new DiceRoller;
+	var diceRoller = new DiceRoller;
 
 	var adj = [
 		"",
@@ -267,7 +266,9 @@ $(function(){
 		"Rising",
 		"Unknown",
 		"Wrathful"
-	];
+	].sort(function(a, b){
+		return Math.round(Math.random())*2-1;
+	})[0];
 	var name = [
 		"Raptor",
 		"Whisper",
@@ -284,7 +285,7 @@ $(function(){
 		"Eagle",
 		"Arrow",
 		"Suliman",
-		"Devouerer",
+		"Devourer",
 		"Skinner",
 		"Juggernaut",
 		"Fly",
@@ -298,7 +299,9 @@ $(function(){
 		"Priestess",
 		"Unknown",
 		"Mesmer"
-	];
+	].sort(function(a, b){
+		return Math.round(Math.random())*2-1;
+	})[0];
 	var suff = [
 		"",
 		"Unknown",
@@ -323,8 +326,10 @@ $(function(){
 		"of the Duck-Punch",
 		"who Has Been Duck-Punched Several Times And Lived To Tell About It",
 		"duck-punches",
-	];
+	].sort(function(a, b){
+		return Math.round(Math.random())*2-1;
+	})[0];
 	$('#desc')
 		.on("change", reidentify)
-		.val(adj[rand(adj.length)] + " " + name[rand(name.length)] + " " + suff[rand(suff.length)]);
+		.val(adj + " " + name + " " + suff);
 });
