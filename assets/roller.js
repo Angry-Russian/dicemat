@@ -1,9 +1,14 @@
 $(function(){
 
 	var counter = 0, settings, rollsList, ws;
-
+	function rand(n){
+		return Math.floor(Math.random()*n)
+	}
+	function reidentify(){
+		if($('#desc').val()) ws.send('{"type":"identify", "id":"' + $('#desc').val() + '"}');
+	}
 	Backbone.sync = function(method, model){
-		if(window.console && console.log) console.log(method +" : ", model);
+		//if(window.console && console.log) console.log(method +" : ", model);
 
 		if(model.attributes && model.attributes.type === "settings"){
 			switch(method){
@@ -200,7 +205,7 @@ $(function(){
 			}
 
 			if(settings.get("xhighest")) results.sort(function(a, b){return a<b;});
-			var roll = {results: results, rules: settings};
+			var roll = {results: results, rules: settings, type:"roll"};
 			if(rolled) rollsList.create(roll);
 			ws.send(JSON.stringify(roll));
 		},
@@ -214,9 +219,8 @@ $(function(){
 
 	ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
+		reidentify();
 		console.log("connection to Horizonforge opened", ws, arguments);
-		var id = $('#desc').val();
-		if(id) ws.send('{"type":"identify", "id":"' + id + '"}');
 	}
 	ws.onclose = function(){
 		//attempt to reconnect
@@ -240,4 +244,87 @@ $(function(){
 
 	window.ws = ws;
 	window.diceRoller = new DiceRoller;
+
+	var adj = [
+		"",
+		"The",
+		"A",
+		"One",
+		"Red",
+		"Green",
+		"Blue",
+		"Yellow",
+		"Violet",
+		"Reborn",
+		"Malevolent",
+		"Shining",
+		"Glorious",
+		"Majestic",
+		"Terrifying",
+		"Sunken",
+		"Beligerant",
+		"Shouting",
+		"Rising",
+		"Unknown",
+		"Wrathful"
+	];
+	var name = [
+		"Raptor",
+		"Whisper",
+		"Student",
+		"Inventor",
+		"Teacher",
+		"Conqueror",
+		"Mirror",
+		"Coin",
+		"Bonesetter",
+		"Mouse",
+		"Gazelle",
+		"Hawk",
+		"Eagle",
+		"Arrow",
+		"Suliman",
+		"Devouerer",
+		"Skinner",
+		"Juggernaut",
+		"Fly",
+		"Shadow",
+		"Crane",
+		"Sentinel",
+		"Protector",
+		"Lord",
+		"Lady",
+		"Priest",
+		"Priestess",
+		"Unknown",
+		"Mesmer"
+	];
+	var suff = [
+		"",
+		"Unknown",
+		"from the Grave",
+		"Binds the Sun",
+		"of Nexus",
+		"of Greatforks",
+		"of Gem",
+		"of The Lap",
+		"of Meru",
+		"of the Faraway",
+		"of the Undrempt Sands",
+		"of the Careful Whisper",
+		"that Bleeds Lies",
+		"that Seduces the Sky",
+		"Bechernokov",
+		"Samnarok",
+		"Meldereval",
+		"Bachtukth",
+		"who Sees Without Words",
+		"who Does That One Thing That No One Else Really Does.",
+		"of the Duck-Punch",
+		"who Has Been Duck-Punched Several Times And Lived To Tell About It",
+		"duck-punches",
+	];
+	$('#desc')
+		.on("change", reidentify)
+		.val(adj[rand(adj.length)] + " " + name[rand(name.length)] + " " + suff[rand(suff.length)]);
 });
