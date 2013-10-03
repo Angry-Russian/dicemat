@@ -32,8 +32,8 @@ section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0
 					 -moz-user-select: none;
 					 -webkit-user-select: none;
 					 -ms-user-select: none;
-					 font-family: webdings;
-					 float: right; color: #999; font-size: 14pt; text-shadow: #999 0 -1px 2px; margin: 0 1em 0 0; font-weight: 400; display: inline-block; text-align: center; width: 32px; height: 32px;}
+					 font-family: Open-sans, sans-serif;
+					 float: right; color: #999; font-size: 10pt; text-shadow: #999 0 -1px 2px; margin: 0 1em 0 0; font-weight: 400; display: inline-block; text-align: center; width: 32px; height: 32px;}
 li:hover .close		{visibility: visible;}
 .is-hidden .close	{color: #fff; visibility: visible;}
 .close:hover		{color: #333;}
@@ -55,10 +55,11 @@ li:hover .close		{visibility: visible;}
 
 
 
-#namer				{padding: 0.5em 0;}
-#namer input		{margin: -0.3em 0; padding: 0.3em; max-width: 100%; width: 100%; padding-left: 0; padding-right: 0; border-left: 0; border-right: 0;}
+#namer				{padding: 0;}
+#namer input		{margin:  0; padding: 0.5em 0; max-width: 100%; width: 100%; padding-left: 0; padding-right: 0; border: 0;
+					 line-height: 24px;}
 
-#roller				{padding: 0;}
+#roller				{padding: 0; line-height: 24px;}
 #roll				{width: 100%; height: 2.25em; display: block;
 					 padding: 0 2.3em 0 0; box-sizing: border-box; -moz-box-sizing: border-box;
 					 font-size: inherit; border: 1px solid white !important; text-shadow: #666 0 1px 2px;}

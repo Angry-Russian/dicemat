@@ -19,18 +19,20 @@
 <body>
 <main id="roller">
 	<section id="left">
-		<h1>Dice</h1>
-		<ul id="dice">
-			<li id="namer"><input type="text" name="desc" placeholder="Display Name" id="desc"/></li>
-			<li class="d20">d4  <input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d6  <input type="number" min="0" max="999" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d8  <input type="number" min="0" max="999" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d10 <input type="number" min="0" max="999" id="d10s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d12 <input type="number" min="0" max="999" id="d12s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d20 <input type="number" min="0" max="999" id="d20s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li class="d20">d100<input type="number" min="0" max="999" id="d100s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-			<li id="roller"><input type="button" id="roll" value="Roll!"/><input type="button" value="" id="settings"/></li>
-		</ul>
+		<form action="#" method="get" id="dicepool">
+			<h1>Dice</h1>
+			<ul id="dice">
+				<li id="namer"><input type="text" name="desc" placeholder="Display Name" id="desc"/></li>
+				<li class="d20">d4  <input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d6  <input type="number" min="0" max="999" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d8  <input type="number" min="0" max="999" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d10 <input type="number" min="0" max="999" id="d10s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d12 <input type="number" min="0" max="999" id="d12s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d20 <input type="number" min="0" max="999" id="d20s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20">d100<input type="number" min="0" max="999" id="d100s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li id="roller"><input type="submit" id="roll" value="Roll!"/><input type="button" value="" id="settings"/></li>
+			</ul>
+		</form>
 		<ul id="options">
 			<li><input type="button" id="exalted" value="exalted"/><input type="button" id="wod" value="WoD"/><input type="button" id="dnd" value="D&D"/></li>
 			<li>
@@ -69,6 +71,16 @@
 		<ul id="results"></ul>
 	</section>
 </main>
+<fieldset>
+	<legend>Legend</legend>
+	<ul>
+		<li class="highest">X</li>
+		<li class="reroll">X</li>
+		<li class="good">X</li>
+		<li class="bad">X</li>
+	</ul>
+</fieldset>
+
 
 <p id="copy">&copy; Horizonforge 2013</p>
 <script type="text/html" id="liTemplate">
@@ -90,7 +102,7 @@
 
 	<%if(rules.get("threshold")){%><span class="ps"> :: <%-successes%> successes</span><%}%>
 	<%if(rules.get("total")){%><span class="ps"> :: <%-total%> total</span><%}%>
-	<span class="close" title="<%-(!hidden)?"hide":"show"%>">N</span>
+	<span class="close" title="<%-(!hidden)?"hide":"show"%>">x</span>
 </script>
 </body>
 </html>

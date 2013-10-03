@@ -7,42 +7,42 @@ use Ratchet\ConnectionInterface;
 class Chat implements MessageComponentInterface{
 
 	protected $clients;
-	protected $broacasters;
+	protected $broadcasters;
 
 	public function __construct(){
 		$this->clients = new \SplObjectStorage;
-		$this->broacasters = array();
+		$this->broadcasters = array();
 	}
 
 	public function onOpen(ConnectionInterface  $con){
 		$this->clients->attach($con);
-		$this->broacasters[$con->resourceId] = array("name"=>"", "clients"=>array());
+		$this->broadcasters[$con->resourceId] = array("name"=>"", "clients"=>array());
 		echo "New connection! ({$con->resourceId})\n";
 	}
 
 	public function onMessage(ConnectionInterface  $from, $msg){
 
 		$req = json_decode($msg);
-		$sender = $this->broacasters[$from->resourceId]['name'];
+		$sender = $this->broadcasters[$from->resourceId]['name'];
 
 		switch($req->type){
 			case "roll":
-				echo "\"{$sender}\" is rolling:".PHP_EOL;
-				var_dump($req);
-				foreach($this->broacasters[$from->resourceId]['clients'] as $cli){
+				//echo "\"{$sender}\" is rolling:".PHP_EOL;
+				//var_dump($req);
+				foreach($this->broadcasters[$from->resourceId]['clients'] as $cli){
 					if($cli!==$from) $cli->send($msg);
 				}
 			break;
 			case "identify":
-				$this->broacasters[$from->resourceId]["name"] = $req->id;
+				$this->broadcasters[$from->resourceId]["name"] = $req->id;
 			break;
 			case "connect":
 				echo "$sender attempting to connect to ";
 				foreach($this->clients as $cli){
-					if($this->broacasters[$cli->resourceId]['name'] === $req->id){
-						echo $this->broacasters[$cli->resourceId]['name'];
-						array_push($this->broacasters[$cli->resourceId]['clients'], $from);
-						$cli->send('{"type":"connect", "id":"'.$this->broacasters[$from->resourceId]['name'] .'", "avatar":""}');
+					if($this->broadcasters[$cli->resourceId]['name'] === $req->name){
+						echo $this->broadcasters[$cli->resourceId]['name'];
+						array_push($this->broadcasters[$cli->resourceId]['clients'], $from);
+						$cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$this->broadcasters[$from->resourceId]['name'] .'", "avatar":""}');
 					}
 				}
 				echo PHP_EOL;
@@ -53,6 +53,21 @@ class Chat implements MessageComponentInterface{
 	}
 
 	public function onClose(ConnectionInterface  $con){
+
+		foreach($this->clients as $cli){
+			if(($ind = array_search($con, $this->broadcasters[$cli->resourceId]['clients'])) !== false && $cli !== $con){
+				$cli->send('{"type":"leave", "id":'.$con->resourceId.'}');
+				echo "sending Guest Disconnected signal to ".$cli->resourceId.PHP_EOL;
+			}
+		}
+
+		foreach($this->broadcasters[$con->resourceId]['clients'] as $cli){
+			if($cli!==$con){
+				$cli->send('{"type":"quit", "id":'.$con->resourceId.'}');
+				echo "sending Host Disconnected signal to ".$cli->resourceId.PHP_EOL;
+			}
+		}
+
         $this->clients->detach($con);
         echo "Connection {$con->resourceId} has disconnected\n";
 	}

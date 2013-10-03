@@ -142,7 +142,11 @@ $(function(){
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
-			"click #show-hidden" : "toggleHidden"
+			"submit #dicepool": "generate",
+			"click #show-hidden" : "toggleHidden",
+			"connect" : "guestConnect",
+			"leave" : "guestLeave",
+			"quit" : "hostLeave"
 
 		},toggleOptions:function(e){
 			$('#options').toggle();
@@ -152,7 +156,10 @@ $(function(){
 			this.$el.toggleClass("show-hidden");
 		},numberFocus:function(e){
 			$(e.target).select();
-		},setExalted : function(e){
+		},
+
+
+		setExalted : function(e){
 			$("#threshold, #doubles").attr('checked', 'checked');
 			$('#targetNumber').val(7);
 			$("#total, #nhighest, #rerolls").removeAttr('checked');
@@ -166,7 +173,22 @@ $(function(){
 			$("#total").attr('checked', 'checked');
 			$("#threshold, #rerolls, #nhighest, #doubles").removeAttr('checked');
 			$(".diceInput").attr('disabled', false);
-		},updateSettings: function(){
+		},
+
+
+		guestConnect: function(e){
+			//
+			console.log(e);
+		},guestLeave: function(e){
+			//
+			console.log(e);
+		},hostLeave: function(e){
+			//
+			console.log(e);
+		},
+
+
+		updateSettings: function(){
 			settings.set({
 				total		: ($("#total").is(":checked"))		?1:0,
 				doubles		: ($("#doubles").is(":checked"))	?1:0,
@@ -182,8 +204,8 @@ $(function(){
 			this.$("#results").prepend(view.render().$el);
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
-		},generate:function(){
-
+		},generate:function(e){
+			e.preventDefault();
 			var rolled = 0;
 			var sides = [4, 6, 8, 10, 12, 20, 100];
 			var results = [];
@@ -206,8 +228,12 @@ $(function(){
 
 			if(settings.get("xhighest")) results.sort(function(a, b){return a<b;});
 			var roll = {results: results, rules: settings, type:"roll"};
-			if(rolled) rollsList.create(roll);
-			ws.send(JSON.stringify(roll));
+			
+			if(rolled){
+				rollsList.create(roll);
+				ws.send(JSON.stringify(roll));
+			}
+			return false;
 		},
 
 		render:function(){},
@@ -216,33 +242,48 @@ $(function(){
 			rollsList.fetch();
 		}
 	});
+	var diceRoller = new DiceRoller;
 
-	ws = new WebSocket('ws://localhost:8888');
+	window.ws = ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
 		reidentify();
 		console.log("connection to Horizonforge opened", ws, arguments);
 	}
 	ws.onclose = function(){
 		//attempt to reconnect
+		console.log("Horizonforge connection closed. Attempting to reconnect...");
 		ws = new WebSocket('ws://localhost:8888');
-		console.log(arguments);
 	}
 	ws.onmessage = function(msg){
-		console.log(JSON.parse(msg.data));
-		var roll = JSON.parse(msg.data);
+		var req = JSON.parse(msg.data);
+		switch(req.type){
+			case "roll":
+				req.model = new Roll;
+				req.rules = new SettingsModel(req.rules);
+				rollsList.create(req);
+				break;
+			case "connect":
+				diceRoller.$el.trigger("connect", req);
+				if(window.console && console.log) console.log("Connection", req.id, "is now watching you.");
+				break;
+			case "leave":
+				diceRoller.$el.trigger("leave", req);
+				if(window.console && console.log) console.log("Connection", req.id, "stopped watching you.");
+				break;
+			case "quit":
+				diceRoller.$el.trigger("quit", req);
+				if(window.console && console.log) console.log("Connection", req.id, "stopped broadcasting to you.");
+				break;
+			default: //console.log("non-roll-type message recieved");
+				break;
+		}
 
-		if(roll.type === "roll"){
-			roll.model = new Roll;
-			roll.rules = new SettingsModel(roll.rules);
-			rollsList.create(roll);
-			console.log("::Network Roll::", roll);
-		}else{alert("non-roll-type message recieved");}
+			
 	}
 	ws.onerror = function(){
 		console.log(arguments);
 	}
 
-	var diceRoller = new DiceRoller;
 
 	var adj = [
 		"",
