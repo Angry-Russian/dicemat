@@ -15,6 +15,9 @@ input[disabled]		{color: #999;}
 
 section				{overflow: visible; height: !00%;}
 section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%);}
+
+fieldset#colorLegend{display: none;}
+
 .diceInput			{float: right; margin-right: 0.5em;}
 
 .good				{color: #5a1;}

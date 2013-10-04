@@ -34,7 +34,7 @@ class Chat implements MessageComponentInterface{
 				}
 			break;
 			case "identify":
-				$this->broadcasters[$from->resourceId]["name"] = $req->id;
+				$this->broadcasters[$from->resourceId]["name"] = $req->name;
 			break;
 			case "connect":
 				echo "$sender attempting to connect to ";

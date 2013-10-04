@@ -5,7 +5,10 @@ $(function(){
 		return Math.floor(Math.random()*n)
 	}
 	function reidentify(){
-		if($('#desc').val()) ws.send('{"type":"identify", "id":"' + ($('#desc').val()||"Anonymous") + '"}');
+		if($('#desc').val()){
+			ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
+			settings.save('name', $('#desc').val())
+		}
 	}
 	Backbone.sync = function(method, model){
 		//if(window.console && console.log) console.log(method +" : ", model);
@@ -58,7 +61,8 @@ $(function(){
 				threshold: 0,
 				doubles: 0,
 				rerolls: 0,
-				type: "settings"
+				type: "settings",
+				name: ""
 			}
 		}, update: function(settings){
 			_.each(settings, function(value, key, list){
@@ -135,7 +139,7 @@ $(function(){
 		events: {
 			"click #settings" : "toggleOptions",
 			"change input:text" : "updateSettings",
-			"click #dice input":"numberFocus",
+			"click #dice input" : "numberFocus",
 			"click input:checkbox" : "updateSettings",
 			"click #clear" : "hideRolls",
 			"click #exalted" : "setExalted",
@@ -177,14 +181,11 @@ $(function(){
 
 
 		guestConnect: function(e){
-			//
-			console.log(e);
+			if(window.console && console.log) console.log("Connection", e.id, "is now watching you.");
 		},guestLeave: function(e){
-			//
-			console.log(e);
+			if(window.console && console.log) console.log("Connection", e.id, "stopped watching you.");
 		},hostLeave: function(e){
-			//
-			console.log(e);
+			if(window.console && console.log) console.log("Connection", e.id, "stopped broadcasting to you.");
 		},
 
 
@@ -264,15 +265,12 @@ $(function(){
 				break;
 			case "connect":
 				diceRoller.$el.trigger("connect", req);
-				if(window.console && console.log) console.log("Connection", req.id, "is now watching you.");
 				break;
 			case "leave":
 				diceRoller.$el.trigger("leave", req);
-				if(window.console && console.log) console.log("Connection", req.id, "stopped watching you.");
 				break;
 			case "quit":
 				diceRoller.$el.trigger("quit", req);
-				if(window.console && console.log) console.log("Connection", req.id, "stopped broadcasting to you.");
 				break;
 			default: //console.log("non-roll-type message recieved");
 				break;
