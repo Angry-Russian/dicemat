@@ -23,7 +23,7 @@ class Chat implements MessageComponentInterface{
 	public function onMessage(ConnectionInterface  $from, $msg){
 
 		$req = json_decode($msg);
-		$sender = $this->broadcasters[$from->resourceId]['name'];
+		$sender = $this->broadcasters[$from->resourceId]['name']?:"Anonymous";
 
 		switch($req->type){
 			case "roll":
@@ -37,12 +37,12 @@ class Chat implements MessageComponentInterface{
 				$this->broadcasters[$from->resourceId]["name"] = $req->name;
 			break;
 			case "connect":
-				echo "$sender attempting to connect to ";
-				foreach($this->clients as $cli){
+				echo "$sender ({$from->resourceId}) attempting to connect to ";
+				if($req->name) foreach($this->clients as $cli){
 					if($this->broadcasters[$cli->resourceId]['name'] === $req->name){
-						echo $this->broadcasters[$cli->resourceId]['name'];
+						echo $this->broadcasters[$cli->resourceId]['name']. "(".$cli->resourceId.")";
 						array_push($this->broadcasters[$cli->resourceId]['clients'], $from);
-						$cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$this->broadcasters[$from->resourceId]['name'] .'", "avatar":""}');
+						$cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$sender.'", "avatar":""}');
 					}
 				}
 				echo PHP_EOL;
@@ -53,17 +53,19 @@ class Chat implements MessageComponentInterface{
 	}
 
 	public function onClose(ConnectionInterface  $con){
+		
+		$sender = $this->broadcasters[$from->resourceId]['name']?:"Anonymous";
 
 		foreach($this->clients as $cli){
 			if(($ind = array_search($con, $this->broadcasters[$cli->resourceId]['clients'])) !== false && $cli !== $con){
-				$cli->send('{"type":"leave", "id":'.$con->resourceId.'}');
+				$cli->send('{"type":"leave", "id":'.$con->resourceId.', "name":"'.$sender.'"}');
 				echo "sending Guest Disconnected signal to ".$cli->resourceId.PHP_EOL;
 			}
 		}
 
 		foreach($this->broadcasters[$con->resourceId]['clients'] as $cli){
 			if($cli!==$con){
-				$cli->send('{"type":"quit", "id":'.$con->resourceId.'}');
+				$cli->send('{"type":"quit", "id":'.$con->resourceId.', "name":"'.$sender.'"}');
 				echo "sending Host Disconnected signal to ".$cli->resourceId.PHP_EOL;
 			}
 		}

@@ -104,5 +104,11 @@
 	<%if(rules.get("total")){%><span class="ps"> :: <%-total%> total</span><%}%>
 	<span class="close" title="<%-(!hidden)?"hide":"show"%>">x</span>
 </script>
+<script type="text/html" id="notificationTemplate">
+	<div class="notification">
+		<h1><%=title%></h1>
+		<p><%=content%></p>
+	</div>
+</script>
 </body>
 </html>

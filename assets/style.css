@@ -1,15 +1,15 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 ul					{margin: 0; padding: 0; border-top: 1px solid silver;}
-li					{font-size: 1.2em; line-height: 24px; background:#eee;
+ul li					{font-size: 1.2em; line-height: 24px; background:#eee;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
 					 border-bottom: 1px solid silver;}
-li:nth-child(2n+1)	{background: #e0e0e0;}
-li:hover			{background: #f7f7f7;}
+ul li:nth-child(2n+1)	{background: #e0e0e0;}
+ul li:hover			{background: #f7f7f7;}
 
 .ps					{color: #999; white-space: pre;}
-li:hover .ps		{color: #555;}
+ul li:hover .ps		{color: #555;}
 
 input[disabled]		{color: #999;}
 
@@ -41,22 +41,28 @@ li:hover .close		{visibility: visible;}
 .is-hidden .close	{color: #fff; visibility: visible;}
 .close:hover		{color: #333;}
 
-
-
+.notification		{color: white; background: rgba(0, 0, 0, 0.85); border-radius: 4px;
+					 position: fixed; bottom: 0; right: 0; width: 150px; z-index: 9;
+					 padding: 10px 20px; margin: 0 24px 8px;
+					 opacity: 0.65;
+					 cursor: pointer;}
+.notification:hover	{opacity: 1;}
+.notification h1 	{font-size: 1.3em;}
+.notification .close{float: right;}
 
 
 #left				{position: absolute; top: 0; left: 0; width: 256px;}
 #left ul, #options	{position: absolute; width: 100%;}
-#left li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
+#left ul li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
 
 #right				{position: absolute; top: 0; left: 256px;
 					 right: 0; bottom: 0;
 					 overflow: auto; border-left: 3px double silver;}
-#right li:first-child {color: #333; background: white;}
+#right ul li:first-child {color: #333; background: white;}
 
+#right ol 	
 
-
-
+#desc				{font-size: 1em;}
 
 #namer				{padding: 0;}
 #namer input		{margin:  0; padding: 0.5em 0; max-width: 100%; width: 100%; padding-left: 0; padding-right: 0; border: 0;

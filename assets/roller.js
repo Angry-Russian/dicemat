@@ -1,6 +1,7 @@
 $(function(){
 
-	var counter = 0, settings, rollsList, ws;
+	var counter = 0, notif = _.template($("#notificationTemplate").html()), settings, rollsList, ws;
+
 	function rand(n){
 		return Math.floor(Math.random()*n)
 	}
@@ -10,6 +11,12 @@ $(function(){
 			settings.save('name', $('#desc').val())
 		}
 	}
+	function notify(title, text){
+		$(notif({title:title, content:text}))
+			.on('click', function(){$(this).remove();})
+			.appendTo('body').hide().fadeIn(300).delay(2000).fadeOut(300, function(){$(this).remove();})
+	}
+
 	Backbone.sync = function(method, model){
 		//if(window.console && console.log) console.log(method +" : ", model);
 
@@ -180,12 +187,15 @@ $(function(){
 		},
 
 
-		guestConnect: function(e){
-			if(window.console && console.log) console.log("Connection", e.id, "is now watching you.");
-		},guestLeave: function(e){
-			if(window.console && console.log) console.log("Connection", e.id, "stopped watching you.");
-		},hostLeave: function(e){
-			if(window.console && console.log) console.log("Connection", e.id, "stopped broadcasting to you.");
+		guestConnect: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
+			notify(data.name, "Has come to watch.");
+		},guestLeave: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
+			notify(data.name, "Went away.");
+		},hostLeave: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
+			notify(data.name, "Disconnected.");
 		},
 
 
@@ -283,7 +293,7 @@ $(function(){
 	}
 
 
-	var adj = [
+	/*var adj = [
 		"",
 		"The",
 		"A",
@@ -367,8 +377,8 @@ $(function(){
 		"duck-punches",
 	].sort(function(a, b){
 		return Math.round(Math.random())*2-1;
-	})[0];
+	})[0];//*/
 	$('#desc')
 		.on("change", reidentify)
-		.val(adj + " " + name + " " + suff);
+		//.val(adj + " " + name + " " + suff);
 });
