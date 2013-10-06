@@ -1,6 +1,6 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
-ul					{margin: 0; padding: 0; border-top: 1px solid silver;}
+ul					{margin: 0; padding: 0;}
 li					{font-size: 1.2em; line-height: 24px; background:#eee;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
@@ -14,7 +14,13 @@ li:hover .ps		{color: #555;}
 input[disabled]		{color: #999;}
 
 section				{overflow: visible; height: !00%;}
-section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%);}
+section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%); border-bottom: 1px solid silver;}
+
+iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
+fieldset				{display: none;}
+
+
+
 .diceInput			{float: right; margin-right: 0.5em;}
 
 .good				{color: #5a1;}
@@ -47,7 +53,7 @@ li:hover .close		{visibility: visible;}
 #left li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
 
 #right				{position: absolute; top: 0; left: 256px;
-					 right: 0; bottom: 0;
+					 right: 0; bottom: 0; white-space: nowrap;                   b
 					 overflow: auto; border-left: 3px double silver;}
 #right li:first-child {color: #333; background: white;}
 
@@ -95,20 +101,33 @@ li:hover .close		{visibility: visible;}
 
 #close, input[type=submit]{cursor: pointer;}
 
-iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
-
 
 #copy					{opacity: 0.25; font-size: x-small; position: fixed; bottom: 0; right: 16px; text-shadow: #333 0 1px 2px;}
 #copy:hover				{opacity: 0.85;}
 
 
-
-
-
+.results				{min-width: 350px; width: 100%; display: block; font-size: 12px;
+						 white-space: normal;}
+/*.results:before			{content: attr(data-name); display: block; width: 100%; height: 1.3em;
+						 box-sizing: border-box;
+						 -moz-box-sizing: border-box;
+						 -webkit-box-sizing: border-box;
+						 -ms-box-sizing: border-box;
+						}
+*/
 
 .is-hidden				{display: none;}
 .show-hidden .is-hidden {display: block;}
 
+#right #viewport		{height: calc(100% - 1.5em - 25px);
+						 box-sizing: border-box;
+						 -moz-box-sizing: border-box;
+						 -webkit-box-sizing: border-box;
+						 -ms-box-sizing: border-box;
+						 overflow: auto;
+						 white-space: nowrap;
+						}
+#right  #viewport ul	{max-height: 100%; overflow: auto; padding: 0; margin: 0;}
 
 @media (max-width: 850px){
 	body			{font-size: 70%;}

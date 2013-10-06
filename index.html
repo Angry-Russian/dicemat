@@ -23,38 +23,38 @@
 			<h1>Dice</h1>
 			<ul id="dice">
 				<li id="namer"><input type="text" name="desc" placeholder="Display Name" id="desc"/></li>
-				<li class="d20">d4  <input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d6  <input type="number" min="0" max="999" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d8  <input type="number" min="0" max="999" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d10 <input type="number" min="0" max="999" id="d10s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d12 <input type="number" min="0" max="999" id="d12s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d20 <input type="number" min="0" max="999" id="d20s" class="diceInput" maxlength="3" size="4" value="0" /></li>
-				<li class="d20">d100<input type="number" min="0" max="999" id="d100s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d4s">d4  </label><input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d6s">d6  </label><input type="number" min="0" max="999" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d8s">d8  </label><input type="number" min="0" max="999" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d10s">d10 </label><input type="number" min="0" max="999" id="d10s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d12s">d12 </label><input type="number" min="0" max="999" id="d12s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d20s">d20 </label><input type="number" min="0" max="999" id="d20s" class="diceInput" maxlength="3" size="4" value="0" /></li>
+				<li class="d20"><label for="d100s">d100</label><input type="number" min="0" max="999" id="d100s" class="diceInput" maxlength="3" size="4" value="0" /></li>
 				<li id="roller"><input type="submit" id="roll" value="Roll!"/><input type="button" value="" id="settings"/></li>
 			</ul>
 		</form>
 		<ul id="options">
 			<li><input type="button" id="exalted" value="exalted"/><input type="button" id="wod" value="WoD"/><input type="button" id="dnd" value="D&D"/></li>
 			<li>
-				<input type="checkbox" id="total" title="Sum-up the total value of the roll (e.g. D&D damage)">
+				<input type="checkbox" id="total" name="total" title="Sum-up the total value of the roll (e.g. D&D damage)">
 				<label for="total">Total</label>
 			</li>
 			<li>
-				<input type="checkbox" id="xhighest"/>
+				<input type="checkbox" id="xhighest" name="xhighest"/>
 				<input type="text" id="nhighest" value="0" maxlength="3" size="2"/>
 				<label for="xhighest"> highest</label>
 			</li>
 			<li>
-				<input type="checkbox" id="threshold" title='Ignore dice that roll lower than this amount, count the number of "successes" (White Wolf)'/>
+				<input type="checkbox" id="threshold" name="threshold" title='Ignore dice that roll lower than this amount, count the number of "successes" (White Wolf)'/>
 				<label for="threshold">Target</label>
 				<input type="text" maxlength="2" size="2" value="7" id="targetNumber"/>
 			</li>
 			<li>
-				<input type="checkbox" id="doubles" title='10s count twice'/>
+				<input type="checkbox" id="doubles" name="doubles" title='10s count twice'/>
 				<label for="doubles">Rule of 10</label>
 			</li>
 			<li>
-				<input type="checkbox" id="rerolls" title='Reroll dice that match or exceed this value'/>
+				<input type="checkbox" id="rerolls" name="rerolls" title='Reroll dice that match or exceed this value'/>
 				<label for="rerolls">X-again</label>
 				<input type="text" maxlength="2" size="2" value="10" id="xagain"/>
 			</li>
@@ -66,9 +66,9 @@
 			</li>
 		</ul>
 	</section>
-	<section id="right">
+	<section id="right" data-count="3">
 		<h1>Results</h1><!--div id="contact">Got comments or suggestions? <a href="#" id="mail">Tell me about it</a>.</div-->
-		<ul id="results"></ul>
+		<div id="viewport"><ul class="results"></ul></div>
 	</section>
 </main>
 <fieldset>
