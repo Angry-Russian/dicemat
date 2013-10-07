@@ -1,6 +1,10 @@
 $(function(){
 
-	var counter = 0, notif = _.template($("#notificationTemplate").html()), settings, rollsList, ws;
+	var settings, rollsList, ws,
+		hosts = [],
+		guests = [],
+		counter = 0,
+		notif = _.template($("#notificationTemplate").html());
 
 	function rand(n){
 		return Math.floor(Math.random()*n)
@@ -156,6 +160,7 @@ $(function(){
 			"submit #dicepool": "generate",
 			"click #show-hidden" : "toggleHidden",
 			"connect" : "guestConnect",
+			"confirm" : "hostConnect",
 			"leave" : "guestLeave",
 			"quit" : "hostLeave"
 
@@ -190,12 +195,24 @@ $(function(){
 		guestConnect: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
 			notify(data.name, "Has come to watch.");
+			guests[data.id] = guests[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
+		},hostConnect: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "is now broadcasting to you.");
+			notify(data.name, "Has been added to your hosts.");
+			hosts[data.id] = hosts[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
 		},guestLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
 			notify(data.name, "Went away.");
+			guests[data.id].remove();
+			delete guests[data.id];
+
 		},hostLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
 			notify(data.name, "Disconnected.");
+			hosts[data.id].remove();
+			delete hosts[data.id];
 		},
 
 
@@ -261,9 +278,11 @@ $(function(){
 		console.log("connection to Horizonforge opened", ws, arguments);
 	}
 	ws.onclose = function(){
-		//attempt to reconnect
 		console.log("Horizonforge connection closed. Attempting to reconnect...");
 		ws = new WebSocket('ws://localhost:8888');
+	}
+	ws.onerror = function(){
+		console.log(arguments);
 	}
 	ws.onmessage = function(msg){
 		var req = JSON.parse(msg.data);
@@ -275,6 +294,9 @@ $(function(){
 				break;
 			case "connect":
 				diceRoller.$el.trigger("connect", req);
+				break;
+			case "confirm":
+				diceRoller.$el.trigger("confirm", req);
 				break;
 			case "leave":
 				diceRoller.$el.trigger("leave", req);
@@ -288,97 +310,6 @@ $(function(){
 
 			
 	}
-	ws.onerror = function(){
-		console.log(arguments);
-	}
 
-
-	/*var adj = [
-		"",
-		"The",
-		"A",
-		"One",
-		"Red",
-		"Green",
-		"Blue",
-		"Yellow",
-		"Violet",
-		"Reborn",
-		"Malevolent",
-		"Shining",
-		"Glorious",
-		"Majestic",
-		"Terrifying",
-		"Sunken",
-		"Beligerant",
-		"Shouting",
-		"Rising",
-		"Unknown",
-		"Wrathful"
-	].sort(function(a, b){
-		return Math.round(Math.random())*2-1;
-	})[0];
-	var name = [
-		"Raptor",
-		"Whisper",
-		"Student",
-		"Inventor",
-		"Teacher",
-		"Conqueror",
-		"Mirror",
-		"Coin",
-		"Bonesetter",
-		"Mouse",
-		"Gazelle",
-		"Hawk",
-		"Eagle",
-		"Arrow",
-		"Suliman",
-		"Devourer",
-		"Skinner",
-		"Juggernaut",
-		"Fly",
-		"Shadow",
-		"Crane",
-		"Sentinel",
-		"Protector",
-		"Lord",
-		"Lady",
-		"Priest",
-		"Priestess",
-		"Unknown",
-		"Mesmer"
-	].sort(function(a, b){
-		return Math.round(Math.random())*2-1;
-	})[0];
-	var suff = [
-		"",
-		"Unknown",
-		"from the Grave",
-		"Binds the Sun",
-		"of Nexus",
-		"of Greatforks",
-		"of Gem",
-		"of The Lap",
-		"of Meru",
-		"of the Faraway",
-		"of the Undrempt Sands",
-		"of the Careful Whisper",
-		"that Bleeds Lies",
-		"that Seduces the Sky",
-		"Bechernokov",
-		"Samnarok",
-		"Meldereval",
-		"Bachtukth",
-		"who Sees Without Words",
-		"who Does That One Thing That No One Else Really Does.",
-		"of the Duck-Punch",
-		"who Has Been Duck-Punched Several Times And Lived To Tell About It",
-		"duck-punches",
-	].sort(function(a, b){
-		return Math.round(Math.random())*2-1;
-	})[0];//*/
-	$('#desc')
-		.on("change", reidentify)
-		//.val(adj + " " + name + " " + suff);
+	$('#desc').on("change", reidentify)
 });

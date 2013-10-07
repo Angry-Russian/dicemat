@@ -60,7 +60,9 @@ li:hover .close		{visibility: visible;}
 					 overflow: auto; border-left: 3px double silver;}
 #right ul li:first-child {color: #333; background: white;}
 
-#right ol 	
+#guests, #hosts		{float: right; list-style: none; clear: none;}
+#guests li,
+#hosts li			{display: inline-block; list-style: none;}
 
 #desc				{font-size: 1em;}
 

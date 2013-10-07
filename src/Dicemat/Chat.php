@@ -38,12 +38,22 @@ class Chat implements MessageComponentInterface{
 			break;
 			case "connect":
 				echo "$sender ({$from->resourceId}) attempting to connect to ";
-				if($req->name) foreach($this->clients as $cli){
-					if($this->broadcasters[$cli->resourceId]['name'] === $req->name){
-						echo $this->broadcasters[$cli->resourceId]['name']. "(".$cli->resourceId.")";
-						array_push($this->broadcasters[$cli->resourceId]['clients'], $from);
-						$cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$sender.'", "avatar":""}');
+				$success = false;
+				$client = null;
+				if($req->name){
+					foreach($this->clients as $cli){
+						if($this->broadcasters[$cli->resourceId]['name'] === $req->name){
+							echo $this->broadcasters[$cli->resourceId]['name']. "(".$cli->resourceId.")";
+							array_push($this->broadcasters[$cli->resourceId]['clients'], $from);
+							$success = $cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$sender.'", "avatar":""}');
+							$client = $cli->resourceId;
+						}
 					}
+					if($success && $client !== null && ){
+						$from->send('{"type":"confirm", "id":"'. $client .'", "name":"'. ($broadcasters[$client]['name']?:"Anonymous") .'"}');
+					}
+				}else{
+
 				}
 				echo PHP_EOL;
 			break;
@@ -53,7 +63,7 @@ class Chat implements MessageComponentInterface{
 	}
 
 	public function onClose(ConnectionInterface  $con){
-		
+
 		$sender = $this->broadcasters[$from->resourceId]['name']?:"Anonymous";
 
 		foreach($this->clients as $cli){
