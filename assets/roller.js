@@ -1,9 +1,28 @@
 $(function(){
 
-	var counter = 0, settings, rollsList, ws;
+	var settings, rollsList, ws,
+		hosts = [],
+		guests = [],
+		counter = 0,
+		notif = _.template($("#notificationTemplate").html());
+
+	function rand(n){
+		return Math.floor(Math.random()*n)
+	}
+	function reidentify(){
+		if($('#desc').val()){
+			ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
+			settings.save('name', $('#desc').val())
+		}
+	}
+	function notify(title, text){
+		$(notif({title:title, content:text}))
+			.on('click', function(){$(this).remove();})
+			.appendTo('body').hide().fadeIn(300).delay(2000).fadeOut(300, function(){$(this).remove();})
+	}
 
 	Backbone.sync = function(method, model){
-		if(window.console && console.log) console.log(method +" : ", model);
+		//if(window.console && console.log) console.log(method +" : ", model);
 
 		if(model.attributes && model.attributes.type === "settings"){
 			switch(method){
@@ -53,7 +72,8 @@ $(function(){
 				threshold: 0,
 				doubles: 0,
 				rerolls: 0,
-				type: "settings"
+				type: "settings",
+				name: ""
 			}
 		}, update: function(settings){
 			_.each(settings, function(value, key, list){
@@ -130,14 +150,19 @@ $(function(){
 		events: {
 			"click #settings" : "toggleOptions",
 			"change input:text" : "updateSettings",
-			"click #dice input":"numberFocus",
+			"click #dice input" : "numberFocus",
 			"click input:checkbox" : "updateSettings",
 			"click #clear" : "hideRolls",
 			"click #exalted" : "setExalted",
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
-			"click #show-hidden" : "toggleHidden"
+			"submit #dicepool": "generate",
+			"click #show-hidden" : "toggleHidden",
+			"connect" : "guestConnect",
+			"confirm" : "hostConnect",
+			"leave" : "guestLeave",
+			"quit" : "hostLeave"
 
 		},toggleOptions:function(e){
 			$('#options').toggle();
@@ -147,7 +172,10 @@ $(function(){
 			this.$el.toggleClass("show-hidden");
 		},numberFocus:function(e){
 			$(e.target).select();
-		},setExalted : function(e){
+		},
+
+
+		setExalted : function(e){
 			$("#threshold, #doubles").attr('checked', 'checked');
 			$('#targetNumber').val(7);
 			$("#total, #nhighest, #rerolls").removeAttr('checked');
@@ -161,7 +189,34 @@ $(function(){
 			$("#total").attr('checked', 'checked');
 			$("#threshold, #rerolls, #nhighest, #doubles").removeAttr('checked');
 			$(".diceInput").attr('disabled', false);
-		},updateSettings: function(){
+		},
+
+
+		guestConnect: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
+			notify(data.name, "Has come to watch.");
+			guests[data.id] = guests[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
+		},hostConnect: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "is now broadcasting to you.");
+			notify(data.name, "Has been added to your hosts.");
+			hosts[data.id] = hosts[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
+		},guestLeave: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
+			notify(data.name, "Went away.");
+			guests[data.id].remove();
+			delete guests[data.id];
+
+		},hostLeave: function(e, data){
+			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
+			notify(data.name, "Disconnected.");
+			hosts[data.id].remove();
+			delete hosts[data.id];
+		},
+
+
+		updateSettings: function(){
 			settings.set({
 				total		: ($("#total").is(":checked"))		?1:0,
 				doubles		: ($("#doubles").is(":checked"))	?1:0,
@@ -177,8 +232,8 @@ $(function(){
 			this.$("#results").prepend(view.render().$el);
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
-		},generate:function(){
-
+		},generate:function(e){
+			e.preventDefault();
 			var rolled = 0;
 			var sides = [4, 6, 8, 10, 12, 20, 100];
 			var results = [];
@@ -200,9 +255,13 @@ $(function(){
 			}
 
 			if(settings.get("xhighest")) results.sort(function(a, b){return a<b;});
-			var roll = {results: results, rules: settings};
-			if(rolled) rollsList.create(roll);
-			ws.send(JSON.stringify(roll));
+			var roll = {results: results, rules: settings, type:"roll"};
+			
+			if(rolled){
+				rollsList.create(roll);
+				ws.send(JSON.stringify(roll));
+			}
+			return false;
 		},
 
 		render:function(){},
@@ -211,33 +270,46 @@ $(function(){
 			rollsList.fetch();
 		}
 	});
+	var diceRoller = new DiceRoller;
 
-	ws = new WebSocket('ws://localhost:8888');
+	window.ws = ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
+		reidentify();
 		console.log("connection to Horizonforge opened", ws, arguments);
-		var id = $('#desc').val();
-		if(id) ws.send('{"type":"identify", "id":"' + id + '"}');
 	}
 	ws.onclose = function(){
-		//attempt to reconnect
+		console.log("Horizonforge connection closed. Attempting to reconnect...");
 		ws = new WebSocket('ws://localhost:8888');
-		console.log(arguments);
-	}
-	ws.onmessage = function(msg){
-		console.log(JSON.parse(msg.data));
-		var roll = JSON.parse(msg.data);
-
-		if(roll.type === "roll"){
-			roll.model = new Roll;
-			roll.rules = new SettingsModel(roll.rules);
-			rollsList.create(roll);
-			console.log("::Network Roll::", roll);
-		}else{alert("non-roll-type message recieved");}
 	}
 	ws.onerror = function(){
 		console.log(arguments);
 	}
+	ws.onmessage = function(msg){
+		var req = JSON.parse(msg.data);
+		switch(req.type){
+			case "roll":
+				req.model = new Roll;
+				req.rules = new SettingsModel(req.rules);
+				rollsList.create(req);
+				break;
+			case "connect":
+				diceRoller.$el.trigger("connect", req);
+				break;
+			case "confirm":
+				diceRoller.$el.trigger("confirm", req);
+				break;
+			case "leave":
+				diceRoller.$el.trigger("leave", req);
+				break;
+			case "quit":
+				diceRoller.$el.trigger("quit", req);
+				break;
+			default: //console.log("non-roll-type message recieved");
+				break;
+		}
 
-	window.ws = ws;
-	window.diceRoller = new DiceRoller;
+			
+	}
+
+	$('#desc').on("change", reidentify)
 });
