@@ -1,3 +1,4 @@
+"use strict"
 $(function(){
 
 	var settings, rollsList, ws,
@@ -152,7 +153,7 @@ $(function(){
 			"change input:text" : "updateSettings",
 			"click #dice input" : "numberFocus",
 			"click input:checkbox" : "updateSettings",
-			"click #clear" : "hideRolls",
+			"click #clear" : "clearRolls",
 			"click #exalted" : "setExalted",
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
@@ -226,10 +227,10 @@ $(function(){
 			});
 			settings.save();
 		},clearRolls:function(){
-			rollsList.shown().hide();
+			_.each(rollsList.shown(), function(t){t.toggle()});
 		},addRoll:function(roll){
 			var view = new RollView({model:roll});
-			this.$("#results").prepend(view.render().$el);
+			this.$('.results[name="self"]').prepend(view.render().$el);
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
 		},generate:function(e){
@@ -254,9 +255,9 @@ $(function(){
 				}
 			}
 
-			if(settings.get("xhighest")) results.sort(function(a, b){return a<b;});
+			if(settings.get("xhighest")) results.sort();
 			var roll = {results: results, rules: settings, type:"roll"};
-			
+
 			if(rolled){
 				rollsList.create(roll);
 				ws.send(JSON.stringify(roll));
@@ -308,7 +309,7 @@ $(function(){
 				break;
 		}
 
-			
+
 	}
 
 	$('#desc').on("change", reidentify)

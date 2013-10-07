@@ -1,7 +1,9 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
-ul					{margin: 0; padding: 0; border-top: 1px solid silver;}
-ul li					{font-size: 1.2em; line-height: 24px; background:#eee;
+
+ul					{margin: 0; padding: 0;}
+ul li				{font-size: 1.2em; line-height: 24px; background:#eee;
+
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
 					 border-bottom: 1px solid silver;}
@@ -14,9 +16,13 @@ ul li:hover .ps		{color: #555;}
 input[disabled]		{color: #999;}
 
 section				{overflow: visible; height: !00%;}
-section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%);}
 
-fieldset#colorLegend{display: none;}
+section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%); border-bottom: 1px solid silver;}
+
+iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
+fieldset				{display: none;}
+
+
 
 .diceInput			{float: right; margin-right: 0.5em;}
 
@@ -56,7 +62,7 @@ li:hover .close		{visibility: visible;}
 #left ul li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
 
 #right				{position: absolute; top: 0; left: 256px;
-					 right: 0; bottom: 0;
+					 right: 0; bottom: 0; white-space: nowrap;
 					 overflow: auto; border-left: 3px double silver;}
 #right ul li:first-child {color: #333; background: white;}
 
@@ -106,19 +112,59 @@ li:hover .close		{visibility: visible;}
 
 #close, input[type=submit]{cursor: pointer;}
 
-iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
-
 
 #copy					{opacity: 0.25; font-size: x-small; position: fixed; bottom: 0; right: 16px; text-shadow: #333 0 1px 2px;}
 #copy:hover				{opacity: 0.85;}
 
+#right #viewport		{height: calc(100% - 1.5em - 25px);
+						 box-sizing: border-box;
+						 -webkit-box-sizing: border-box;
+						 -moz-box-sizing: border-box;
+						 -ms-box-sizing: border-box;
+						 -o-box-sizing: border-box;
+						 overflow: hidden;
+						 overflow-x: auto;
+						 overflow-y: hidden;
+						 white-space: nowrap;}
 
+.results				{min-width: 350px; max-height: 100%; width: 100%; display: inline-block; font-size: 12px; vertical-align: top;
+						 white-space: normal; box-shadow: silver 0 3px 8px -2px; overflow: auto; padding: 0; margin: 0;
+						 box-sizing: border-box;
+						 -o-box-sizing: border-box;
+						 -ms-box-sizing: border-box;
+						 -moz-box-sizing: border-box;
+						 -webkit-box-sizing: border-box;
+						 transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
+						 -o-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
+						 -moz-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
+						 -webkit-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;}
 
-
-
+#viewport[data-count="1"] .results	{width: 100%!important;}
+#viewport[data-count="2"] .results	{width: 50%!important;}
+#viewport[data-count="3"] .results	{width: 30%!important;}
+#viewport[data-count="4"] .results	{width: 25%!important;}
+#viewport[data-count="5"] .results	{width: 20%!important;}
+#viewport[data-count="6"] .results	{width: 18%!important;}
+#viewport[data-count="7"] .results	{width: 13.5%!important;}
+#viewport[data-count="8"] .results	{width: 12.5%!important;}
+#viewport[data-count="9"] .results	{width: 11.1%!important;}
+#viewport[data-count="10"].results,
+#viewport[data-count]				{padding: 8px;
+									 transition: padding: 0.5s;
+									 -o-transition: padding: 0.5s;
+									 -moz-transition: padding: 0.5s;
+									 -webkit-transition: padding: 0.5s}
+#viewport[data-count] .results		{width: 10%; border-radius: 8px; border: 1px solid silver; margin-right: 1px;}
+#viewport[data-count] .results:before{
+						 content: attr(name); display: block; width: 100%; height: 1.3em;
+						 box-sizing: border-box;
+						 -moz-box-sizing: border-box;
+						 -webkit-box-sizing: border-box;
+						 -ms-box-sizing: border-box;}
 
 .is-hidden				{display: none;}
 .show-hidden .is-hidden {display: block;}
+
 
 
 @media (max-width: 850px){
