@@ -1,3 +1,4 @@
+"use strict"
 $(function(){
 
 	var counter = 0, settings, rollsList, ws;
@@ -201,7 +202,7 @@ $(function(){
 			_.each(rollsList.shown(), function(t){t.toggle()});
 		},addRoll:function(roll){
 			var view = new RollView({model:roll});
-			this.$(".results").prepend(view.render().$el);
+			this.$('.results[name="self"]').prepend(view.render().$el);
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
 		},generate:function(e){
