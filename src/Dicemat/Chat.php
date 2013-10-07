@@ -29,8 +29,11 @@ class Chat implements MessageComponentInterface{
 			case "roll":
 				//echo "\"{$sender}\" is rolling:".PHP_EOL;
 				//var_dump($req);
+				var_dumpo(json_encode($req));
+				$req->name = $this->broadcasters[$from->resourceId]['name'];
+				$req->id = $from->resourceId;
 				foreach($this->broadcasters[$from->resourceId]['clients'] as $cli){
-					if($cli!==$from) $cli->send($msg);
+					if($cli!==$from) $cli->send(json_encode($req));
 				}
 			break;
 			case "identify":
@@ -49,8 +52,8 @@ class Chat implements MessageComponentInterface{
 							$client = $cli->resourceId;
 						}
 					}
-					if($success && $client !== null && ){
-						$from->send('{"type":"confirm", "id":"'. $client .'", "name":"'. ($broadcasters[$client]['name']?:"Anonymous") .'"}');
+					if($success && $client !== null){
+						$from->send('{"type":"confirm", "id":"'. $client .'", "name":"'. ($this->broadcasters[$client]['name']?:"Anonymous") .'"}');
 					}
 				}else{
 
