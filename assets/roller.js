@@ -1,9 +1,9 @@
 "use strict"
 $(function(){
 
-	var settings, rollsList, ws,
-		hosts = [],
-		guests = [],
+	var settings, ws,
+		hosts = {},
+		guests = {},
 		counter = 0,
 		notif = _.template($("#notificationTemplate").html());
 
@@ -43,26 +43,23 @@ $(function(){
 		switch(method){
 			case "read":
 				var i = 0, roll = localStorage["roll0"];
-				while(roll){
-					roll = localStorage["roll"+(i++)];
+				for(i; i < localStorage.length; i++){
+					roll = localStorage["roll"+(i)];
 					if(roll){
 						roll = JSON.parse(roll);
 						roll.model = model.models[0];
 						roll.rules = new SettingsModel(roll.rules);
 						rollsList.create(roll);
 					}else{
-						counter = i-1;
+						counter = i;
 						break;
 					}
-				}
-				break;
+				} break;
 			case "create": model.id = counter++;
 			case "update": localStorage['roll'+model.id] = JSON.stringify(model); break;
 			case "delete":  break;
 			default: console.error("Unsupported method: " + method);
-		}
-	};
-
+		}};
 
 	var SettingsModel = Backbone.Model.extend({
 
@@ -80,11 +77,14 @@ $(function(){
 			_.each(settings, function(value, key, list){
 				this[key] = value;
 			});
-		}
-	});
-
+		}});
 	settings = new SettingsModel;
 	settings.fetch();
+	$('#desc').val(settings.get('name'));
+
+
+
+
 
 	var Roll = Backbone.Model.extend({
 
@@ -106,9 +106,7 @@ $(function(){
 		},
 
 		initialize:function(){
-		}
-	});
-
+		}});
 	var List = Backbone.Collection.extend({
 		model: Roll,
 		hidden: function(){
@@ -120,9 +118,8 @@ $(function(){
 		nextOrder:function(){
 			if(!this.length) return 1;
 			return this.last().get('order');
-		},comparator: "order"
-	});
-	rollsList = new List;
+		},comparator: "order"});
+	var rollsList = new List;
 
 	var RollView = Backbone.View.extend({
 		tagName:"li",
@@ -143,6 +140,56 @@ $(function(){
 
 		initialize:function(){
 			this.listenTo(this.model, 'change', this.render);
+		}});
+
+	var User = Backbone.Model.extend({
+		defaults: function(){
+			return {
+				name:"Anonymous",
+				id:0,
+				type:"guest",
+				rollsList:null
+			}
+		}, initialize:function(){}
+	});
+	var UserList = Backbone.Collection.extend({
+		model:User,
+		guests:function(){
+			return this.where({type:"guest"});
+		},
+		hosts:function(){
+			return this.where({type:"host"});
+		}});
+	window.usersList = new UserList;
+
+	var HostView = Backbone.View.extend({
+		tagName:"ul",
+		events:{
+			"click .remove": "remove"
+		}, remove:function(e, data){
+			this.$el.remove();
+			$('body').triggge('hostLeave', this.model);
+		}, render:function(e){
+			this.$el.attr('name', this.model.get("name")).toggleClass('results', true);
+			return this;
+		}, initialize:function(e){
+			this.listenTo(this.model, 'change', this.render);
+		}
+	});
+
+	var GuestView = Backbone.View.extend({
+		tagName:"li",
+		events:{
+			// none for now
+		}, remove:function(e, data){
+			this.$el.remove();
+			$('body').triggge('hostLeave', this.model);
+		}, render:function(e){
+			this.$el.attr('name', this.model.get("name"));
+			return this;
+		}, initialize:function(e){
+			this.listenTo(this.model, 'change', this.render);
+			this.$el.text(this.model.get('name')[0].toUpperCase());
 		}
 	});
 
@@ -163,6 +210,7 @@ $(function(){
 			"connect" : "guestConnect",
 			"confirm" : "hostConnect",
 			"leave" : "guestLeave",
+			"rename" : "userRename",
 			"quit" : "hostLeave"
 
 		},toggleOptions:function(e){
@@ -196,24 +244,26 @@ $(function(){
 		guestConnect: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
 			notify(data.name, "Has come to watch.");
-			guests[data.id] = guests[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+			usersList.create({type:"guest", name:data.name, id:data.id})
+			//guests[data.id] = guests[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
 
 		},hostConnect: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "is now broadcasting to you.");
 			notify(data.name, "Has been added to your hosts.");
-			hosts[data.id] = hosts[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+			usersList.create({type:"host", name:data.name, id:data.id})
+			//hosts[data.id] = hosts[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
 
 		},guestLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
 			notify(data.name, "Went away.");
-			guests[data.id].remove();
-			delete guests[data.id];
+			//guests[data.id].remove();
+			//delete guests[data.id];
 
 		},hostLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
 			notify(data.name, "Disconnected.");
-			hosts[data.id].remove();
-			delete hosts[data.id];
+			//hosts[data.id].remove();
+			//delete hosts[data.id];
 		},
 
 
@@ -231,6 +281,19 @@ $(function(){
 		},addRoll:function(roll){
 			var view = new RollView({model:roll});
 			this.$('.results[name="self"]').prepend(view.render().$el);
+
+		},addUser:function(usr){
+			console.log("adding new user", usr);
+			if(usr.get('type')==="host"){
+				var view = new HostView({model:usr});
+				usr.rollsList = new List;
+				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
+			}else {
+				var view = new GuestView({model:usr});
+				this.$('#guests').append(view.render().$el);
+			}
+			console.log(view.$el);
+
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
 		},generate:function(e){
@@ -268,22 +331,25 @@ $(function(){
 		render:function(){},
 		initialize: function(){
 			this.listenTo(rollsList, 'add', this.addRoll);
+			this.listenTo(usersList, 'add', this.addUser);
 			rollsList.fetch();
-		}
-	});
+		}});
 	var diceRoller = new DiceRoller;
+
+
+	window.usersList = usersList;
 
 	window.ws = ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
+		if(window.console && console.log) console.log("connection to Horizonforge opened", ws, arguments);
 		reidentify();
-		console.log("connection to Horizonforge opened", ws, arguments);
 	}
 	ws.onclose = function(){
-		console.log("Horizonforge connection closed. Attempting to reconnect...");
+		if(window.console && console.log) console.log("Horizonforge connection closed. Attempting to reconnect...");
 		ws = new WebSocket('ws://localhost:8888');
 	}
 	ws.onerror = function(){
-		console.log(arguments);
+		if(window.console && console.log) console.log(arguments);
 	}
 	ws.onmessage = function(msg){
 		var req = JSON.parse(msg.data);
@@ -291,7 +357,11 @@ $(function(){
 			case "roll":
 				req.model = new Roll;
 				req.rules = new SettingsModel(req.rules);
-				rollsList.create(req);
+				_.each(usersList.where({id:""+req.id, type:"host"}), function(host){
+					console.log("rolling for", host);
+					host.rollsList.create(req);
+				});
+				//rollsList.create(req);
 				break;
 			case "connect":
 				diceRoller.$el.trigger("connect", req);
@@ -302,15 +372,19 @@ $(function(){
 			case "leave":
 				diceRoller.$el.trigger("leave", req);
 				break;
+			case "rename":
+				diceRoller.$el.trigger("rename", req);
+				break;
 			case "quit":
 				diceRoller.$el.trigger("quit", req);
 				break;
-			default: //console.log("non-roll-type message recieved");
+			default:
+				if(window.console && console.log) console.log("non-roll-type message recieved", req);
 				break;
 		}
 
 
 	}
 
-	$('#desc').on("change", reidentify)
+	$('#desc').on("change", reidentify);
 });

@@ -134,13 +134,13 @@ li:hover .close		{visibility: visible;}
 						 -ms-box-sizing: border-box;
 						 -moz-box-sizing: border-box;
 						 -webkit-box-sizing: border-box;
-						 transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
-						 -o-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
-						 -moz-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;
-						 -webkit-transition: border-radius 0.5s, border-width 0.5s, width 0.5s;}
+						 transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
+						 -o-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
+						 -moz-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
+						 -webkit-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;}
 
 #viewport[data-count="1"] .results	{width: 100%!important;}
-#viewport[data-count="2"] .results	{width: 50%!important;}
+#viewport[data-count="2"] .results	{width: 48.5%!important;}
 #viewport[data-count="3"] .results	{width: 30%!important;}
 #viewport[data-count="4"] .results	{width: 25%!important;}
 #viewport[data-count="5"] .results	{width: 20%!important;}
