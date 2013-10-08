@@ -169,11 +169,20 @@ $(function(){
 		}, remove:function(e, data){
 			this.$el.remove();
 			$('body').triggge('hostLeave', this.model);
+
+		},addRoll:function(roll){
+			console.log('adding roll')
+			var view = new RollView({model:roll});
+			this.$el.prepend(view.render().$el);
+
 		}, render:function(e){
 			this.$el.attr('name', this.model.get("name")).toggleClass('results', true);
 			return this;
 		}, initialize:function(e){
-			this.listenTo(this.model, 'change', this.render);
+			//this.rollsList = new List;
+			console.log(this.model.rollsList);
+			this.listenTo(this.model.rollsList, 'add', this.addRoll);
+
 		}
 	});
 
@@ -285,8 +294,8 @@ $(function(){
 		},addUser:function(usr){
 			console.log("adding new user", usr);
 			if(usr.get('type')==="host"){
-				var view = new HostView({model:usr});
 				usr.rollsList = new List;
+				var view = new HostView({model:usr});
 				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
 			}else {
 				var view = new GuestView({model:usr});
@@ -359,7 +368,11 @@ $(function(){
 				req.rules = new SettingsModel(req.rules);
 				_.each(usersList.where({id:""+req.id, type:"host"}), function(host){
 					console.log("rolling for", host);
-					host.rollsList.create(req);
+					host.rollsList.create({
+						results:req.results,
+						rules:req.rules,
+						type:"roll-remote"
+					});
 				});
 				//rollsList.create(req);
 				break;
