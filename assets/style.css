@@ -1,15 +1,15 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 
-ul					{margin: 0; padding: 0; background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);}
-ul li				{font-size: 1.2em; line-height: 24px;
+main ul				{margin: 0; padding: 0; background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);}
+main ul li			{font-size: 1.2em; line-height: 24px;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
 					 border-bottom: 1px dotted #ccc;}
 
-ul li:nth-child(2n+1)	 {/*background: rgba(0, 0, 0, 0.025);*/}
-ul li:hover				 {background: #f7f7f7;}
-#right ul li:first-child {color: #333; background: rgba(255, 255, 255, 0.85);}
+main ul li:nth-child(2n+1)	 {/*background: rgba(0, 0, 0, 0.025);*/}
+main ul li:hover			 {background: #f7f7f7;}
+#right ul li:first-child 	 {color: #333; background: rgba(255, 255, 255, 0.85);}
 
 
 #guests				{margin: 0; padding: 0;}
@@ -19,6 +19,8 @@ ul li:hover				 {background: #f7f7f7;}
 					 line-height: 32px;
 					 box-shadow: rgba(0, 0, 0, 0.3) 0 2px 9px -3px;}
 #guests	li:hover	{content: attr(name); display: inline-block; float: left;}
+
+#guests .plus		{cursor: pointer; border-radius: 4px; box-shadow: none; border: 1px solid silver; background: transparent; color: silver; text-shadow: none;}
 
 .ps					{color: #999; white-space: pre;}
 ul li:hover .ps		{color: #555;}
@@ -57,13 +59,15 @@ li:hover .close		{visibility: visible;}
 .is-hidden .close	{color: #fff; visibility: visible;}
 .close:hover		{color: #333;}
 
+#notifications		{position: fixed; right: 0; bottom: 0; list-style: none;}
 .notification		{color: white; background: rgba(0, 0, 0, 0.85); border-radius: 4px;
-					 position: fixed; bottom: 0; right: 0; width: 150px; z-index: 9;
+					 bottom: 0; right: 0; width: 150px; z-index: 9; list-style: none;
 					 padding: 10px 20px; margin: 0 24px 8px;
 					 opacity: 0.65;
 					 cursor: pointer;}
 .notification:hover	{opacity: 1;}
-.notification h1 	{font-size: 1.3em;}
+.notification h1 	{font-size: 12pt; margin: 0; padding: 0;}
+.notification p 	{font-size: 9pt; margin: 0 0 0.5em; padding: 0;}
 .notification .close{float: right;}
 
 

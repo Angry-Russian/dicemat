@@ -17,9 +17,9 @@ $(function(){
 		}
 	}
 	function notify(title, text){
-		$(notif({title:title, content:text}))
+		$('<li/>').html(notif({title:title, content:text})).addClass('notification')
 			.on('click', function(){$(this).remove();})
-			.appendTo('body').hide().fadeIn(300).delay(2000).fadeOut(300, function(){$(this).remove();})
+			.appendTo('#notifications').hide().slideDown(300).delay(2000).fadeOut(300, function(){$(this).remove();})
 	}
 
 	Backbone.sync = function(method, model){
@@ -179,7 +179,7 @@ $(function(){
 			this.$el.hide(350, function(e){$(this).remove()});
 
 		},addRoll:function(roll){
-			console.log('adding roll')
+			if(window.console && console.log) console.log('adding roll')
 			var view = new RollView({model:roll});
 			this.$el.prepend(view.render().$el);
 
@@ -188,7 +188,7 @@ $(function(){
 			return this;
 		}, initialize:function(e){
 			//this.rollsList = new List;
-			console.log(this.model.rollsList);
+			if(window.console && console.log) console.log(this.model.rollsList);
 			this.listenTo(this.model.rollsList, 'add', this.addRoll);
 			this.listenTo(this.model, 'remove', this.remove);
 		}
@@ -279,7 +279,7 @@ $(function(){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
 			notify(data.name, "Disconnected.");
 			var n = parseInt(this.$('#viewport').attr('data-count'))-1;
-			if(n === 1) this.$('#viewport').removeAttr('data-count');
+			if(!n ||  isNaN(n) || n <= 1) this.$('#viewport').removeAttr('data-count');
 			else this.$('#viewport').attr('data-count', n);
 		},
 
@@ -295,6 +295,7 @@ $(function(){
 			settings.save();
 		},clearRolls:function(){
 			_.each(rollsList.shown(), function(t){t.toggle()});
+
 		},addRoll:function(roll){
 			var view = new RollView({model:roll});
 			this.$('.results[name="self"]').prepend(view.render().$el);
@@ -303,7 +304,7 @@ $(function(){
 			if(usr.get('type')==="host"){
 				usr.rollsList = new List;
 				var view = new HostView({model:usr});
-				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).prepend(view.render().$el);
+				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
 			}else {
 				var view = new GuestView({model:usr});
 				this.$('#guests').prepend(view.render().$el);

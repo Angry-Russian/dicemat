@@ -49,7 +49,7 @@ class Chat implements MessageComponentInterface{
 				$client = null;
 				if($req->name){
 					foreach($this->clients as $cli){
-						if($this->broadcasters[$cli->resourceId]['name'] === $req->name){
+						if($this->broadcasters[$cli->resourceId]['name'] === $req->name && !in_array($from, $this->broadcasters[$cli->resourceId]['clients'])){
 							echo $this->broadcasters[$cli->resourceId]['name']. "(".$cli->resourceId.")";
 							array_push($this->broadcasters[$cli->resourceId]['clients'], $from);
 							$success = $cli->send('{"type":"connect", "id":'.$from->resourceId.', "name":"'.$sender.'", "avatar":""}');
