@@ -1,14 +1,15 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 
-ul					{margin: 0; padding: 0;}
-ul li				{font-size: 1.2em; line-height: 24px; background:#eee;
-
+ul					{margin: 0; padding: 0; background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);}
+ul li				{font-size: 1.2em; line-height: 24px;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
 					 border-bottom: 1px solid silver;}
-ul li:nth-child(2n+1)	{background: #e0e0e0;}
-ul li:hover			{background: #f7f7f7;}
+
+ul li:nth-child(2n+1)	 {background: rgba(0, 0, 0, 0.025);}
+ul li:hover				 {background: #f7f7f7;}
+#right ul li:first-child {color: #333; background: rgba(255, 255, 255, 0.85);}
 
 .ps					{color: #999; white-space: pre;}
 ul li:hover .ps		{color: #555;}
@@ -64,7 +65,6 @@ li:hover .close		{visibility: visible;}
 #right				{position: absolute; top: 0; left: 256px;
 					 right: 0; bottom: 0; white-space: nowrap;
 					 overflow: auto; border-left: 3px double silver;}
-#right ul li:first-child {color: #333; background: white;}
 
 #guests, #hosts		{float: right; list-style: none; clear: none;}
 #guests li,
@@ -127,17 +127,17 @@ li:hover .close		{visibility: visible;}
 						 overflow-y: hidden;
 						 white-space: nowrap;}
 
-.results				{min-width: 350px; max-height: 100%; width: 100%; display: inline-block; font-size: 12px; vertical-align: top;
+.results				{min-width: 350px; min-height: 3em; height: 100%; max-height: 100%; width: 100%; display: inline-block; font-size: 12px; vertical-align: top;
 						 white-space: normal; box-shadow: silver 0 3px 8px -2px; overflow: auto; padding: 0; margin: 0;
 						 box-sizing: border-box;
 						 -o-box-sizing: border-box;
 						 -ms-box-sizing: border-box;
 						 -moz-box-sizing: border-box;
 						 -webkit-box-sizing: border-box;
-						 transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
-						 -o-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
-						 -moz-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;
-						 -webkit-transition: border-radius 0.5s, border-width 0.5s, width 0.5s, height, 0.75s;}
+						 transition: border-radius 0.35s, border-width 0.35s, width 0.15s;
+						 -o-transition: border-radius 0.35s, border-width 0.35s, width 0.15s;
+						 -moz-transition: border-radius 0.35s, border-width 0.35s, width 0.15s;
+						 -webkit-transition: border-radius 0.35s, border-width 0.35s, width 0.15s;}
 
 #viewport[data-count="1"] .results	{width: 100%!important;}
 #viewport[data-count="2"] .results	{width: 48.5%!important;}
