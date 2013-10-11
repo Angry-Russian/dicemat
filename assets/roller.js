@@ -1,7 +1,7 @@
 "use strict"
 $(function(){
 
-	var settings, ws,
+	var settings, ws, usersList,
 		hosts = {},
 		guests = {},
 		counter = 0,
@@ -169,15 +169,14 @@ $(function(){
 		hosts:function(){
 			return this.where({type:"host"});
 		}});
-	window.usersList = new UserList;
+	usersList = new UserList;
 
 	var HostView = Backbone.View.extend({
 		tagName:"ul",
 		events:{
 			"click .remove": "remove"
-		}, remove:function(e, data){
-			this.$el.remove();
-			$('body').triggge('hostLeave', this.model);
+		},remove:function(e, data){
+			this.$el.hide(350, function(e){$(this).remove()});
 
 		},addRoll:function(roll){
 			console.log('adding roll')
@@ -191,22 +190,23 @@ $(function(){
 			//this.rollsList = new List;
 			console.log(this.model.rollsList);
 			this.listenTo(this.model.rollsList, 'add', this.addRoll);
-
+			this.listenTo(this.model, 'remove', this.remove);
 		}
 	});
 
 	var GuestView = Backbone.View.extend({
 		tagName:"li",
 		events:{
-			// none for now
+			"remove": "remove"
 		}, remove:function(e, data){
-			this.$el.remove();
-			$('body').triggge('hostLeave', this.model);
+			this.$el.hide(350, function(e){$(this).remove()});
+
 		}, render:function(e){
 			this.$el.attr('name', this.model.get("name"));
 			return this;
 		}, initialize:function(e){
 			this.listenTo(this.model, 'change', this.render);
+			this.listenTo(this.model, 'remove', this.remove);
 			this.$el.text(this.model.get('name')[0].toUpperCase());
 		}
 	});
@@ -262,26 +262,25 @@ $(function(){
 		guestConnect: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
 			notify(data.name, "Has come to watch.");
-			usersList.create({type:"guest", name:data.name, id:data.id})
-			//guests[data.id] = guests[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
+			usersList.create({type:"guest", name:data.name, id:data.id});
 
 		},hostConnect: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "is now broadcasting to you.");
 			notify(data.name, "Has been added to your hosts.");
-			usersList.create({type:"host", name:data.name, id:data.id})
-			//hosts[data.id] = hosts[data.id] || $("<li/>").append('<p>'+data.name[0].toUpperCase()+'</p>').appendTo('#guests');
+
+			usersList.create({type:"host", name:data.name, id:data.id});
 
 		},guestLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
 			notify(data.name, "Went away.");
-			//guests[data.id].remove();
-			//delete guests[data.id];
 
 		},hostLeave: function(e, data){
 			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
 			notify(data.name, "Disconnected.");
-			//hosts[data.id].remove();
-			//delete hosts[data.id];
+			var n = parseInt(this.$('#viewport').attr('data-count'))-1;
+			if(n === 1) this.$('#viewport').removeAttr('data-count');
+			else this.$('#viewport').attr('data-count', n);
 		},
 
 
@@ -301,16 +300,14 @@ $(function(){
 			this.$('.results[name="self"]').prepend(view.render().$el);
 
 		},addUser:function(usr){
-			console.log("adding new user", usr);
 			if(usr.get('type')==="host"){
 				usr.rollsList = new List;
 				var view = new HostView({model:usr});
-				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
+				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).prepend(view.render().$el);
 			}else {
 				var view = new GuestView({model:usr});
-				this.$('#guests').append(view.render().$el);
+				this.$('#guests').prepend(view.render().$el);
 			}
-			console.log(view.$el);
 
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
@@ -392,12 +389,14 @@ $(function(){
 				diceRoller.$el.trigger("confirm", req);
 				break;
 			case "leave":
+				usersList.remove(usersList.where({"id":req.id+""}));
 				diceRoller.$el.trigger("leave", req);
 				break;
 			case "rename":
 				diceRoller.$el.trigger("rename", req);
 				break;
 			case "quit":
+				usersList.remove(usersList.where({"id":req.id+""}));
 				diceRoller.$el.trigger("quit", req);
 				break;
 			default:
