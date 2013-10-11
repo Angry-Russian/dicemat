@@ -23,9 +23,8 @@ $(function(){
 	}
 
 	Backbone.sync = function(method, model){
-		//if(window.console && console.log) console.log(method +" : ", model);
-
-		if(model.attributes && model.attributes.type === "settings"){
+		var t = model.type||model.get("type");
+		if(t === "settings"){
 			switch(method){
 				case "read":
 					var s = localStorage['settings'];
@@ -34,32 +33,41 @@ $(function(){
 				case "create": model.id="settings"
 				case "update": localStorage['settings'] = model.toJSON(); break;
 				case "delete":  break;
-				default: console.error("Unsupported method: " + method);
+				default: if(window.console && console.error) console.error("Unsupported method: " + method);
 			}
 			localStorage['settings'] = JSON.stringify(model);
 			return 0;
-		}
-
-		switch(method){
-			case "read":
-				var i = 0, roll = localStorage["roll0"];
-				for(i; i < localStorage.length; i++){
-					roll = localStorage["roll"+(i)];
-					if(roll){
-						roll = JSON.parse(roll);
-						roll.model = model.models[0];
-						roll.rules = new SettingsModel(roll.rules);
-						rollsList.create(roll);
-					}else{
-						counter = i;
-						break;
-					}
-				} break;
-			case "create": model.id = counter++;
-			case "update": localStorage['roll'+model.id] = JSON.stringify(model); break;
-			case "delete":  break;
-			default: console.error("Unsupported method: " + method);
-		}};
+		}else if(t === "list"){
+			switch(method){
+				case "read":
+					var i = 0, roll = localStorage["roll0"];
+					for(i; i < localStorage.length; i++){
+						roll = localStorage["roll"+(i)];
+						if(roll){
+							roll = JSON.parse(roll);
+							//roll.model = model.models[0];
+							roll.rules = new SettingsModel(roll.rules);
+							rollsList.add(roll);
+						}else{
+							counter = i;
+							break;
+						}
+					} break;
+				case "create":
+				case "update":
+				case "delete":
+				default: if(window.console && console.error) console.error("Unsupported method: " + method);
+			}
+		}else if(t === "roll"){
+			switch(method){
+				case "create": model.id = counter++;
+				case "update": localStorage['roll'+model.id] = JSON.stringify(model); break;
+				case "read":
+				case "delete":
+				default: if(window.console && console.error) console.error("Unsupported method: " + method);
+			}
+		}else return;
+	};
 
 	var SettingsModel = Backbone.Model.extend({
 
@@ -109,6 +117,7 @@ $(function(){
 		}});
 	var List = Backbone.Collection.extend({
 		model: Roll,
+		type:"list",
 		hidden: function(){
 			return this.where({hidden: true});
 		},
