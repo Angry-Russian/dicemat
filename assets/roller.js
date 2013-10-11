@@ -174,9 +174,10 @@ $(function(){
 	var HostView = Backbone.View.extend({
 		tagName:"ul",
 		events:{
-			"click .remove": "remove"
+			//"click .remove": "remove"
 		},remove:function(e, data){
-			this.$el.hide(350, function(e){$(this).remove()});
+			var that = this.$el;
+				that.hide(350, function(e){that.remove()});
 
 		},addRoll:function(roll){
 			if(window.console && console.log) console.log('adding roll')
@@ -197,9 +198,10 @@ $(function(){
 	var GuestView = Backbone.View.extend({
 		tagName:"li",
 		events:{
-			"remove": "remove"
+			//"remove": "remove"
 		}, remove:function(e, data){
-			this.$el.hide(350, function(e){$(this).remove()});
+			var that = this.$el;
+				that.hide(350, function(e){that.remove()});
 
 		}, render:function(e){
 			this.$el.attr('name', this.model.get("name"));
@@ -207,7 +209,7 @@ $(function(){
 		}, initialize:function(e){
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'remove', this.remove);
-			this.$el.text(this.model.get('name')[0].toUpperCase());
+			this.$el.text(this.model.get('name')[0]);
 		}
 	});
 
@@ -373,8 +375,8 @@ $(function(){
 			case "roll":
 				req.model = new Roll;
 				req.rules = new SettingsModel(req.rules);
-				_.each(usersList.where({id:""+req.id, type:"host"}), function(host){
-					console.log("rolling for", host);
+				_.each(usersList.where({id:req.id, type:"host"}), function(host){
+					//console.log("rolling for", host);
 					host.rollsList.create({
 						results:req.results,
 						rules:req.rules,
@@ -390,14 +392,14 @@ $(function(){
 				diceRoller.$el.trigger("confirm", req);
 				break;
 			case "leave":
-				usersList.remove(usersList.where({"id":req.id+""}));
+				usersList.remove(usersList.where({"id":req.id}));
 				diceRoller.$el.trigger("leave", req);
 				break;
 			case "rename":
 				diceRoller.$el.trigger("rename", req);
 				break;
 			case "quit":
-				usersList.remove(usersList.where({"id":req.id+""}));
+				usersList.remove(usersList.where({"id":req.id}));
 				diceRoller.$el.trigger("quit", req);
 				break;
 			default:
