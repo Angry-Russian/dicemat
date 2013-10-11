@@ -5,11 +5,20 @@ ul					{margin: 0; padding: 0; background: linear-gradient(to bottom, #f7f7f7, w
 ul li				{font-size: 1.2em; line-height: 24px;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
-					 border-bottom: 1px solid silver;}
+					 border-bottom: 1px dotted #ccc;}
 
-ul li:nth-child(2n+1)	 {background: rgba(0, 0, 0, 0.025);}
+ul li:nth-child(2n+1)	 {/*background: rgba(0, 0, 0, 0.025);*/}
 ul li:hover				 {background: #f7f7f7;}
 #right ul li:first-child {color: #333; background: rgba(255, 255, 255, 0.85);}
+
+
+#guests				{margin: 0; padding: 0;}
+#guests	li			{width: 32px; height: 32px; background: #ccc; color: white; text-shadow: black 0 1px 2px;
+					 margin: 8px 4px 0;
+					 text-align: center;
+					 line-height: 32px;
+					 box-shadow: rgba(0, 0, 0, 0.3) 0 2px 9px -3px;}
+#guests	li:hover	{content: attr(name); display: inline-block; float: left;}
 
 .ps					{color: #999; white-space: pre;}
 ul li:hover .ps		{color: #555;}
@@ -148,15 +157,14 @@ li:hover .close		{visibility: visible;}
 #viewport[data-count="7"] .results	{width: 13.5%!important;}
 #viewport[data-count="8"] .results	{width: 12.5%!important;}
 #viewport[data-count="9"] .results	{width: 11.1%!important;}
-#viewport[data-count="10"].results,
 #viewport[data-count]				{padding: 8px;
 									 transition: padding: 0.5s;
 									 -o-transition: padding: 0.5s;
 									 -moz-transition: padding: 0.5s;
 									 -webkit-transition: padding: 0.5s}
-#viewport[data-count] .results		{width: 10%; border-radius: 8px; border: 1px solid silver; margin-right: 1px;}
+#viewport[data-count] .results		{width: 10%; border-radius: 8px; border: 1px solid silver; margin-right: 8px;}
 #viewport[data-count] .results:before{
-						 content: attr(name); display: block; width: 100%; height: 1.3em;
+						 content: attr(name); display: block; width: 100%; font-size: 1.3em; padding: 0.5em; border-bottom: 1px dotted silver; text-align: right; font-weight: 700; text-shadow: silver 0 1px 2px;
 						 box-sizing: border-box;
 						 -moz-box-sizing: border-box;
 						 -webkit-box-sizing: border-box;
