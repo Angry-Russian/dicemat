@@ -39,7 +39,7 @@ class Chat implements MessageComponentInterface{
 			case "identify":
 				$this->broadcasters[$from->resourceId]["name"] = $req->name;
 				foreach($this->broadcasters[$from->resourceId]["clients"] as $cli){
-					$cli->send('{"type:"rename", "id":'.$from->resourceId.', "name":"'.$req->name.'"}');
+					$cli->send('{"type":"rename", "id":'.$from->resourceId.', "name":"'.$req->name.'"}');
 				};
 
 			break;

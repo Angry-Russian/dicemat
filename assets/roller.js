@@ -11,17 +11,50 @@ $(function(){
 		return Math.floor(Math.random()*n)
 	}
 	function reidentify(){
-		if($('#desc').val()){
-			ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
-			settings.save('name', $('#desc').val())
-		}
+		$('#viewport ul.results#self').attr('name',  $('#desc').val());
+		ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
+		settings.save('name', $('#desc').val())
 	}
 	function notify(title, text){
 		$('<li/>').html(notif({title:title, content:text})).addClass('notification')
 			.on('click', function(){$(this).remove();})
 			.appendTo('#notifications').hide().slideDown(300).delay(2000).fadeOut(300, function(){$(this).remove();})
 	}
+	function ask(text, placeholder, callback){
+		$('#addHost').fadeOut(200, function(){$(this).remove()})
+		$('<form id="addHost"/>').addClass('ask').attr('action', '#')
+			.append($('<span/>').text(text))
+			//.append('<br>')
+			.append('<input type="text" class="answer" placeholder="'+placeholder+'">')
+			//.append(
+			//	$('<div>')
+				.append('<button class="confirm">Ok</button>')
+				.append('<button class="cancel">Cancel</button>')
+			//)
+			.on('click', '.confirm', function(e){
+				callback($('.ask .answer').val());
+				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
+				return false;
 
+			}).on('click', '.cancel', function(e){
+				callback(null);
+				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
+				return false;
+
+			}).on('submit', function(e){
+				callback($('.ask .answer').val());
+				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
+				return false;
+
+			}).on('keydown', function(e){
+				if(e.which === 27){
+					callback(null);
+					$(this).fadeOut(200, function(){$(this).remove();});
+					return false;
+				}
+
+			}).appendTo('body').hide().fadeIn(200).find('input').focus();
+	}
 	Backbone.sync = function(method, model){
 		var t = model.type||model.get("type");
 		if(t === "settings"){
@@ -192,6 +225,7 @@ $(function(){
 			if(window.console && console.log) console.log(this.model.rollsList);
 			this.listenTo(this.model.rollsList, 'add', this.addRoll);
 			this.listenTo(this.model, 'remove', this.remove);
+			this.listenTo(this.model, 'change', this.render);
 		}
 	});
 
@@ -217,7 +251,6 @@ $(function(){
 		el:$('main#roller'),
 		events: {
 			"click #settings" : "toggleOptions",
-			"change input:text" : "updateSettings",
 			"click #dice input" : "numberFocus",
 			"click input:checkbox" : "updateSettings",
 			"click #clear" : "clearRolls",
@@ -225,7 +258,9 @@ $(function(){
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
+			"change input:text" : "updateSettings",
 			"submit #dicepool": "generate",
+			"keydown #desc": "selfRename",
 			"click #show-hidden" : "toggleHidden",
 			"connect" : "guestConnect",
 			"confirm" : "hostConnect",
@@ -283,6 +318,14 @@ $(function(){
 			var n = parseInt(this.$('#viewport').attr('data-count'))-1;
 			if(!n ||  isNaN(n) || n <= 1) this.$('#viewport').removeAttr('data-count');
 			else this.$('#viewport').attr('data-count', n);
+		},selfRename:function(e, data){
+			if(e.which===13){
+				$('#desc').blur();
+				return false;
+			}
+		},userRename:function(e, data){
+			console.log('rename', data);
+			_.each(usersList.where({id:data.id}), function(u){u.save('name', data.name)});
 		},
 
 
@@ -292,7 +335,8 @@ $(function(){
 				doubles		: ($("#doubles").is(":checked"))	?1:0,
 				rerolls		: ($("#rerolls").is(":checked"))	?parseInt($("#xagain").val()):0,
 				xhighest	: ($("#xhighest").is(":checked"))	?parseInt($("#nhighest").val()):0,
-				threshold	: ($("#threshold").is(":checked"))	?parseInt($("#targetNumber").val()):0
+				threshold	: ($("#threshold").is(":checked"))	?parseInt($("#targetNumber").val()):0,
+				name		: $('#desc').val()
 			});
 			settings.save();
 		},clearRolls:function(){
@@ -300,7 +344,7 @@ $(function(){
 
 		},addRoll:function(roll){
 			var view = new RollView({model:roll});
-			this.$('.results[name="self"]').prepend(view.render().$el);
+			this.$('.results#self').prepend(view.render().$el);
 
 		},addUser:function(usr){
 			if(usr.get('type')==="host"){
@@ -316,6 +360,12 @@ $(function(){
 			return Math.ceil(Math.random() * sides);
 		},generate:function(e){
 			e.preventDefault();
+
+			if($(e.currentTarget).is('input#desc')){
+				$(e.currentTarget).blur();
+				return false;
+			}
+
 			var rolled = 0;
 			var sides = [4, 6, 8, 10, 12, 20, 100];
 			var results = [];
@@ -370,6 +420,7 @@ $(function(){
 		if(window.console && console.log) console.log(arguments);
 	}
 	ws.onmessage = function(msg){
+		console.log(msg.data);
 		var req = JSON.parse(msg.data);
 		switch(req.type){
 			case "roll":
@@ -410,5 +461,31 @@ $(function(){
 
 	}
 
+	$('body').on('click', function(e){
+		var t = $(e.target)
+		if(!t.is('li.plus') && !t.parents('.plus').length && !t.is('.ask') && !t.parents('.ask').length){
+			$('.ask').fadeOut(200, function(){
+				$('.ask').remove()
+			});
+			$('.dropdown').toggleClass('is-collapsed', true);
+		}
+	});
 	$('#desc').on("change", reidentify);
+	$('li.plus').on('click', function(){
+		$(this).find('ul').toggleClass('is-collapsed');
+	}).find('ul').on('click', '.connect', function(){
+		ask('Connect', 'Display Name', function(d){
+			if(d)ws.send(JSON.stringify({
+				type:'connect',
+				name:d
+			}));
+		});
+	}).on('click', '.invite', function(){
+		ask('Invite', 'Display Name', function(d){
+			if(d)ws.send(JSON.stringify({
+				type:'invite',
+				name:d
+			}));
+		});
+	});
 });
