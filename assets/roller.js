@@ -213,7 +213,6 @@ $(function(){
 				that.hide(350, function(e){that.remove()});
 
 		},addRoll:function(roll){
-			if(window.console && console.log) console.log('adding roll')
 			var view = new RollView({model:roll});
 			this.$el.prepend(view.render().$el);
 
@@ -222,7 +221,6 @@ $(function(){
 			return this;
 		}, initialize:function(e){
 			//this.rollsList = new List;
-			if(window.console && console.log) console.log(this.model.rollsList);
 			this.listenTo(this.model.rollsList, 'add', this.addRoll);
 			this.listenTo(this.model, 'remove', this.remove);
 			this.listenTo(this.model, 'change', this.render);
@@ -297,23 +295,29 @@ $(function(){
 
 
 		guestConnect: function(e, data){
-			if(window.console && console.log) console.log("Connection", data.id, "is now watching you.");
 			notify(data.name, "Has come to watch.");
-
-			usersList.create({type:"guest", name:data.name, id:data.id});
+			var existingUser = usersList.where({name:data.name, id:data.id});
+			if(existingUser.length){
+				_.each(existingUser, function(u){
+					u.save({type:"host-guest"});
+				})
+			}else usersList.create({type:"guest", name:data.name, id:data.id});
 
 		},hostConnect: function(e, data){
-			if(window.console && console.log) console.log("Connection", data.id, "is now broadcasting to you.");
+			console.log(1);
+			var existingUser = usersList.where({name:data.name, id:data.id});
 			notify(data.name, "Has been added to your hosts.");
+			if(existingUser.length){
 
-			usersList.create({type:"host", name:data.name, id:data.id});
+				_.each(existingUser, function(u){
+					u.save({type:"host-guest"});
+				})
+			}else usersList.create({type:"host", name:data.name, id:data.id});
 
 		},guestLeave: function(e, data){
-			if(window.console && console.log) console.log("Connection", data.id, "stopped watching you.");
 			notify(data.name, "Went away.");
 
 		},hostLeave: function(e, data){
-			if(window.console && console.log) console.log("Connection", data.id, "stopped broadcasting to you.");
 			notify(data.name, "Disconnected.");
 			var n = parseInt(this.$('#viewport').attr('data-count'))-1;
 			if(!n ||  isNaN(n) || n <= 1) this.$('#viewport').removeAttr('data-count');
@@ -324,7 +328,6 @@ $(function(){
 				return false;
 			}
 		},userRename:function(e, data){
-			console.log('rename', data);
 			_.each(usersList.where({id:data.id}), function(u){u.save('name', data.name)});
 		},
 
@@ -347,13 +350,29 @@ $(function(){
 			this.$('.results#self').prepend(view.render().$el);
 
 		},addUser:function(usr){
-			if(usr.get('type')==="host"){
+			var view;
+			if(usr.get('type').match(/host/)){
 				usr.rollsList = new List;
-				var view = new HostView({model:usr});
+				view = new HostView({model:usr});
 				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
-			}else {
-				var view = new GuestView({model:usr});
+			}
+
+			if(usr.get('type').match(/guest/)) {
+				view = new GuestView({model:usr});
 				this.$('#guests').prepend(view.render().$el);
+			}
+
+		},updateUser:function(usr){
+			console.log(usr);
+			if(usr.get('type') === "host-guest"){
+				if(usr._previousAttributes.type === "host"){
+					var view = new GuestView({model:usr});
+					this.$('#guests').prepend(view.render().$el);
+				}else if(usr._previousAttributes.type === "guest"){
+					usr.rollsList = new List;
+					var view = new HostView({model:usr});
+					this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
+				}
 			}
 
 		},roll:function(sides){
@@ -400,6 +419,8 @@ $(function(){
 		initialize: function(){
 			this.listenTo(rollsList, 'add', this.addRoll);
 			this.listenTo(usersList, 'add', this.addUser);
+			this.listenTo(usersList, 'change', this.updateUser)
+
 			rollsList.fetch();
 		}});
 	var diceRoller = new DiceRoller;
@@ -409,25 +430,20 @@ $(function(){
 
 	window.ws = ws = new WebSocket('ws://localhost:8888');
 	ws.onopen = function(data){
-		if(window.console && console.log) console.log("connection to Horizonforge opened", ws, arguments);
 		reidentify();
 	}
 	ws.onclose = function(){
-		if(window.console && console.log) console.log("Horizonforge connection closed. Attempting to reconnect...");
 		ws = new WebSocket('ws://localhost:8888');
 	}
 	ws.onerror = function(){
-		if(window.console && console.log) console.log(arguments);
 	}
 	ws.onmessage = function(msg){
-		console.log(msg.data);
 		var req = JSON.parse(msg.data);
 		switch(req.type){
 			case "roll":
 				req.model = new Roll;
 				req.rules = new SettingsModel(req.rules);
 				_.each(usersList.where({id:req.id, type:"host"}), function(host){
-					//console.log("rolling for", host);
 					host.rollsList.create({
 						results:req.results,
 						rules:req.rules,
@@ -454,7 +470,6 @@ $(function(){
 				diceRoller.$el.trigger("quit", req);
 				break;
 			default:
-				if(window.console && console.log) console.log("non-roll-type message recieved", req);
 				break;
 		}
 
