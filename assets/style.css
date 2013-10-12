@@ -184,7 +184,7 @@ li:hover .close		{visibility: visible;}
 
 .ask					{z-index: 11; position: fixed; top: 50%; margin-top: -5em; left: 50%; margin-left: -175px; background: rgba(0, 0, 0, 0.75);
 						 box-shadow: #333 0 3px 8px -3px; color: white; padding: 20px; border-radius: 8px;}
-.ask span				{font-size: 9pt; margin-top: -20px; display: block; line-height: 20px; color: #aaa;}
+.ask span				{font-size: 9pt; margin-top: -20px; display: block; line-height: 35px; color: #aaa;}
 .ask input				{text-align: left;
 						 padding: 0.3em;
 						 box-sizing: border-box;
