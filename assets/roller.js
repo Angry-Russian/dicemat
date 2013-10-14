@@ -428,12 +428,12 @@ $(function(){
 
 	window.usersList = usersList;
 
-	window.ws = ws = new WebSocket('ws://localhost:8888');
+	window.ws = ws = new WebSocket('ws://horizonforge.com:8888');
 	ws.onopen = function(data){
 		reidentify();
 	}
 	ws.onclose = function(){
-		ws = new WebSocket('ws://localhost:8888');
+		ws = new WebSocket('ws://horizonforge.com:8888');
 	}
 	ws.onerror = function(){
 	}

@@ -1,7 +1,7 @@
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 
-main ul				{margin: 0; padding: 0; background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);}
+main ul				{margin: 0; padding: 0; /*background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);*/}
 main ul li			{font-size: 1.2em; line-height: 24px;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
@@ -34,10 +34,10 @@ input[disabled]		{color: #999;}
 
 section				{overflow: visible; height: 100%;}
 
-section h1			{text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; background: linear-gradient(0deg, #eee, white 60%); border-bottom: 1px solid silver;}
+section h1			{background: url(grey.png); text-shadow: #777 0 1px 2px; color: #444; padding: 0.5em; margin:0; /*background: linear-gradient(0deg, #eee, white 60%);*/ border-bottom: 1px solid silver;}
 
-iframe					{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
-fieldset				{display: none;}
+iframe				{display: none; position: fixed; top: -999999%; left: -999999%; width: 0; height: 0; border: 0;}
+fieldset			{display: none;}
 
 
 
@@ -105,7 +105,7 @@ li:hover .close		{visibility: visible;}
 					 float: right; margin: -2.25em 0 0; padding: 0 1px 1px;
 					 font-size: inherit;
 					 background: #eee url(settingsIcon.png) center center no-repeat;
-					 border-width: 1px; border-color: transparent transparent silver silver;}
+					 border-width: 1px; border-color: white transparent white silver;}
 #settings:hover		{background-color: #fff;}
 #settings.on		{background: #e0e0e0 url(settingsIcon.png) center center no-repeat;}
 
@@ -134,8 +134,8 @@ li:hover .close		{visibility: visible;}
 #copy					{opacity: 0.25; font-size: x-small; position: fixed; bottom: 0; right: 16px; text-shadow: #333 0 1px 2px;}
 #copy:hover				{opacity: 0.85;}
 
-#right #viewport		{height: calc(100% - 1.5em - 25px);
-						 box-sizing: border-box;
+#right #viewport		{height: calc(100% - 1.5em - 25px); background: url(nasty_fabric.png);
+						 box-sizing: border-box; box-shadow: inset #333 0 4px 16px -6px;
 						 -webkit-box-sizing: border-box;
 						 -moz-box-sizing: border-box;
 						 -ms-box-sizing: border-box;
@@ -146,7 +146,7 @@ li:hover .close		{visibility: visible;}
 						 white-space: nowrap;}
 
 .results				{min-width: 350px; min-height: 3em; height: 100%; max-height: 100%; width: 100%; display: inline-block; font-size: 12px; vertical-align: top;
-						 white-space: normal; box-shadow: silver 0 3px 8px -2px; overflow: auto; padding: 0; margin: 0;
+						 background: #eee; white-space: normal; box-shadow: #333 0 3px 8px -2px; overflow: auto; padding: 0; margin: 0;
 						 box-sizing: border-box;
 						 -o-box-sizing: border-box;
 						 -ms-box-sizing: border-box;
