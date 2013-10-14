@@ -11,7 +11,7 @@ $(function(){
 		return Math.floor(Math.random()*n)
 	}
 	function reidentify(){
-		$('#viewport ul.results#self').attr('name',  $('#desc').val());
+		$('#viewport ul.results#self').attr('name',  $('#desc').val() || "Anonymous (self)");
 		ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
 		settings.save('name', $('#desc').val())
 	}
