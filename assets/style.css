@@ -178,9 +178,12 @@ li:hover .close		{visibility: visible;}
 						 -moz-box-sizing: border-box;
 						 -webkit-box-sizing: border-box;
 						 -ms-box-sizing: border-box;}
+#viewport[data-count] .results:before:hover:after{
+						 content:"remove";
+}
 
 .is-hidden				{display: none;}
-.show-hidden .is-hidden {display: block;}
+.show-hidden .is-hidden {display: block; background: rgba(0, 0, 0, 0.05); opacity: 0.5;}
 
 .ask					{z-index: 11; position: fixed; top: 50%; margin-top: -5em; left: 50%; margin-left: -175px; background: rgba(0, 0, 0, 0.75);
 						 box-shadow: #333 0 3px 8px -3px; color: white; padding: 20px; border-radius: 8px;}
@@ -198,8 +201,8 @@ li:hover .close		{visibility: visible;}
 						 -ms-transition: opacity 0.2s, height 0.2s;
 						 -moz-transition: opacity 0.2s, height 0.2s;
 						 -webkit-transition: opacity 0.2s, height 0.2s;}
-.is-collapsed			{height: 0; opacity: 0;}
-
+.is-collapsed			{height: 0; margin: 0; padding: 0; opacity: 0;}
+.is-collapsed *			{display: none!important;}
 
 @media (max-width: 850px){
 	body			{font-size: 70%;}

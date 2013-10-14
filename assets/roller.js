@@ -73,12 +73,11 @@ $(function(){
 		}else if(t === "list"){
 			switch(method){
 				case "read":
-					var i = 0, roll = localStorage["roll0"];
+					var i = 1, roll = localStorage["roll0"];
 					for(i; i < localStorage.length; i++){
 						roll = localStorage["roll"+(i)];
 						if(roll){
 							roll = JSON.parse(roll);
-							//roll.model = model.models[0];
 							roll.rules = new SettingsModel(roll.rules);
 							rollsList.add(roll);
 						}else{
@@ -93,7 +92,7 @@ $(function(){
 			}
 		}else if(t === "roll"){
 			switch(method){
-				case "create": model.id = counter++;
+				case "create": model.id = model.get("order");
 				case "update": localStorage['roll'+model.id] = JSON.stringify(model); break;
 				case "read":
 				case "delete":
@@ -158,8 +157,9 @@ $(function(){
 			return this.without.apply(this, this.hidden());
 		},
 		nextOrder:function(){
+			console.log("length",this.length, (this.length)?this.last():1)
 			if(!this.length) return 1;
-			return this.last().get('order');
+			return this.last().get('order')+1;
 		},comparator: "order"});
 	var rollsList = new List;
 
