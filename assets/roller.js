@@ -405,10 +405,9 @@ $(function(){
 				}
 			}
 
-			if(settings.get("xhighest")) results.sort();
-			var roll = {results: results, rules: settings, type:"roll"};
-
+			if(settings.get("xhighest")) results.sort(function(a, b){return (a===b)?0:(a>b)?-1:1});
 			if(rolled){
+				var roll = {results: results, rules: settings, type:"roll"};
 				rollsList.create(roll);
 				ws.send(JSON.stringify(roll));
 			}
