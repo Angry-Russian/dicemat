@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+html, body          {width: 100%; height: 100;}
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 
@@ -76,13 +80,50 @@ li:hover .close		{visibility: visible;}
 .notification .close{float: right;}
 
 
+
+
+
+#options			{position: absolute; display: block; overflow: hidden;
+                     color: #f0f0f0; background: #383838;
+                     width: 0px;
+                     top: 0; bottom: 0;
+                     transition: width 0.35s;
+                     -o-transition: width 0.35s;
+                     -moz-transition: width 0.35s;
+                     -webkit-transition: width 0.35s;}
+#options h1         { padding: 0.5em; margin:0;}
+#options ul         {list-style: none; line-height: 36px; margin: 0; padding: 0 0 0 1.5em;}
+#options.on         {width: 256px;}
+#options ul         {width: 256px;}
+#options.on+main    {left: 256px;}
+
+main                {position: absolute; left: 0; right: 0; top:0; bottom: 0; box-shadow: black 0 0 32px -8px; border-left: white;
+                     transition: all 0.35s;
+                     -o-transition: all 0.35s;
+                     -moz-transition: all 0.35s;
+                     -webkit-transition: all 0.35s;}
+
 #left				{position: absolute; top: 0; left: 0; width: 256px;}
-#left ul, #options	{position: absolute; width: 100%;}
 #left ul li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
 
-#right				{position: absolute; top: 0; left: 256px;
-					 right: 0; bottom: 0; white-space: nowrap;
+#right				{position: relative; top: 0; width: calc(100% - 260px);
+					 left: 256px; bottom: 0; white-space: nowrap;
 					 overflow: auto; border-left: 3px double silver;}
+
+#options input[type=button]{border: 0; background: #484848; color: #f0f0f0; padding: 1em; font-size: normal; display: inline-block; cursor: pointer;}
+#options input[type=button]:hover{background: #585858;}
+#wod                {margin: 0 1px;}
+
+
+
+
+
+
+
+
+
+
+
 
 #guests, #hosts		{float: right; list-style: none; clear: none;}
 #guests li,
@@ -96,25 +137,21 @@ li:hover .close		{visibility: visible;}
 
 #roller				{padding: 0; line-height: 24px;}
 #roll				{width: 100%; height: 2.25em; display: block;
-					 padding: 0 2.3em 0 0; box-sizing: border-box; -moz-box-sizing: border-box;
+					 box-sizing: border-box; -moz-box-sizing: border-box;
 					 font-size: inherit; border: 1px solid white !important; text-shadow: #666 0 1px 2px;}
 #roll, #settings	{background: linear-gradient(180deg, #f0f0f0, #e7e7e7); cursor: pointer;}
 #roll:hover			{background: linear-gradient(180deg, #ffffff, #f0f0f0);}
 
-#settings			{padding: 0; height: 2.3em; width: 2.3em;
-					 float: right; margin: -2.25em 0 0; padding: 0 1px 1px;
+#settings			{padding: 0; height: 100%; width: 48px; display: block; margin-top: -3px; margin-right: 1em;
+					 float: left; 
 					 font-size: inherit;
 					 background: #eee url(settingsIcon.png) center center no-repeat;
-					 border-width: 1px; border-color: white transparent white silver;}
+                     background-size: contain;
+					 border-width: 1px; border-color: silver; border-radius: 3px;}
 #settings:hover		{background-color: #fff;}
-#settings.on		{background: #e0e0e0 url(settingsIcon.png) center center no-repeat;}
+#settings.on		{background-color: #e0e0e0;}
 
-#options			{display: none;}
-#options li			{border-bottom: 1px solid transparent; background: #e0e0e0; padding: 0.5em;}
-#options li:last-child		{border-bottom: none;}
-#options input[type=button]{padding: 0.5em 0; margin: -0.5em 0; display: inline-block; width: 33%;}
-#clear				{width: 100%!important; display: block; height: 2.3em; font-size: inherit; margin: -0.5em;}
-#show-hidden		{width: 100%!important;}
+
 
 #contact				{display: inline-block; position: fixed; top: 32px; right: 16px; opacity: 0.25; text-shadow: silver 0 1px 1px;}
 #contact:hover			{opacity: 1;}

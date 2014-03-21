@@ -246,7 +246,7 @@ $(function(){
 	});
 
 	var DiceRoller = Backbone.View.extend({
-		el:$('main#roller'),
+		el:$('#roller'),
 		events: {
 			"click #settings" : "toggleOptions",
 			"click #dice input" : "numberFocus",
@@ -267,8 +267,9 @@ $(function(){
 			"quit" : "hostLeave"
 
 		},toggleOptions:function(e){
-			$('#options').toggle();
-			$("#settings").toggleClass("on");
+			/*$('#options').toggle();
+			$("#settings").toggleClass("on");*/
+            $('#settings, #options').toggleClass("on");
 			if(!$("#settings").is('.on')) this.updateSettings();
 		},toggleHidden:function(){
 			this.$el.toggleClass("show-hidden");
@@ -278,18 +279,18 @@ $(function(){
 
 
 		setExalted : function(e){
-			$("#threshold, #doubles").attr('checked', 'checked');
+			$("#threshold, #doubles").prop('checked', true);
 			$('#targetNumber').val(7);
-			$("#total, #nhighest, #rerolls").removeAttr('checked');
+			$("#total, #nhighest, #rerolls").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 		},setWod : function(e){
-			$("#threshold, #rerolls").attr('checked', 'checked');
+			$("#threshold, #rerolls").prop('checked', true);
 			$('#targetNumber').val(8);
-			$("#total, #nhighest, #doubles").removeAttr('checked');
+			$("#total, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 		},setDnd : function(e){
-			$("#total").attr('checked', 'checked');
-			$("#threshold, #rerolls, #nhighest, #doubles").removeAttr('checked');
+			$("#total").prop('checked', true);
+			$("#threshold, #rerolls, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").attr('disabled', false);
 		},
 
