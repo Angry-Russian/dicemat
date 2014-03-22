@@ -249,6 +249,7 @@ $(function(){
 		el:$('#roller'),
 		events: {
 			"click #settings" : "toggleOptions",
+			"swipe" : "toggleOptions",
 			"click #dice input" : "numberFocus",
 			"click input:checkbox" : "updateSettings",
 			"click #clear" : "clearRolls",

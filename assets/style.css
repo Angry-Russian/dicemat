@@ -1,12 +1,15 @@
 *{
     box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
-html, body          {width: 100%; height: 100;}
+html, body          {width: 100%; height: 100%;}
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input				{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
+input:focus         {outline: none;}
 
 main ul				{margin: 0; padding: 0; /*background: linear-gradient(to bottom, #f7f7f7, white 20%, #dedede);*/}
-main ul li			{font-size: 1.2em; line-height: 24px;
+main ul li			{font-size: 1.2em; line-height: 23px;
 					 list-style: none; color: #666;
 					 margin: 0; padding: 0.5em 0 0.5em 1em;
 					 border-bottom: 1px dotted #ccc;}
@@ -83,9 +86,8 @@ li:hover .close		{visibility: visible;}
 
 
 
-#options			{position: absolute; display: block; overflow: hidden;
+#options			{position: absolute; display: block; overflow: hidden; box-shadow: inset black -8px 0 32px -8px;
                      color: #f0f0f0; background: #383838;
-                     width: 0px;
                      top: 0; bottom: 0;
                      transition: width 0.35s;
                      -o-transition: width 0.35s;
@@ -93,27 +95,34 @@ li:hover .close		{visibility: visible;}
                      -webkit-transition: width 0.35s;}
 #options h1         { padding: 0.5em; margin:0;}
 #options ul         {list-style: none; line-height: 36px; margin: 0; padding: 0 0 0 1.5em;}
-#options.on         {width: 256px;}
 #options ul         {width: 256px;}
-#options.on+main    {left: 256px;}
+#options.on+main    {/*left: 256px;*/
+                     transform: translateX(256px);
+                     -moz-transform: translateX(256px);
+                     -webkit-transform: translateX(256px);
+}
 
-main                {position: absolute; left: 0; right: 0; top:0; bottom: 0; box-shadow: black 0 0 32px -8px; border-left: white;
-                     transition: all 0.35s;
-                     -o-transition: all 0.35s;
-                     -moz-transition: all 0.35s;
-                     -webkit-transition: all 0.35s;}
+main                {position: absolute; left: 0; top:0; border-left: white; width: 100%; height: 100%;
+                     background: inherit;
+                     transition: all 0.25s ease;
+                     -o-transition: all 0.25s ease;
+                     -moz-transition: all 0.25s ease;
+                     -webkit-transition: all 0.25s ease;}
 
 #left				{position: absolute; top: 0; left: 0; width: 256px;}
+#left form          {height: 100%;}
+#left form ul       {max-height: calc(100% - 3em - 1px); overflow-y:auto; overflow-x: hidden;}
+
 #left ul li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
 
 #right				{position: relative; top: 0; width: calc(100% - 260px);
 					 left: 256px; bottom: 0; white-space: nowrap;
 					 overflow: auto; border-left: 3px double silver;}
 
-#options input[type=button]{border: 0; background: #484848; color: #f0f0f0; padding: 1em; font-size: normal; display: inline-block; cursor: pointer;}
-#options input[type=button]:hover{background: #585858;}
+#options input      {border: 0; background: #484848; color: #f0f0f0; font-size: normal; display: inline-block;}
+#options input[type=button]{padding: 1em; cursor: pointer; border-radius: 0;}
+#options input:hover{background: #585858;}
 #wod                {margin: 0 1px;}
-
 
 
 
@@ -139,8 +148,10 @@ main                {position: absolute; left: 0; right: 0; top:0; bottom: 0; bo
 #roll				{width: 100%; height: 2.25em; display: block;
 					 box-sizing: border-box; -moz-box-sizing: border-box;
 					 font-size: inherit; border: 1px solid white !important; text-shadow: #666 0 1px 2px;}
-#roll, #settings	{background: linear-gradient(180deg, #f0f0f0, #e7e7e7); cursor: pointer;}
-#roll:hover			{background: linear-gradient(180deg, #ffffff, #f0f0f0);}
+/* #roll, #settings	{background: linear-gradient(180deg, #f0f0f0, #e7e7e7); cursor: pointer;}
+#roll:hover			{background: linear-gradient(180deg, #ffffff, #f0f0f0);}*/
+#roll, #settings	{background: linear-gradient(180deg, #ffbb55, #ffbb55 50%, #ffb050 50%, #ff9922); cursor: pointer;}
+#roll:hover			{background: linear-gradient(180deg, #ffcc77, #ffcc77 50%, #ffc060 50%, #ffbb55);}
 
 #settings			{padding: 0; height: 100%; width: 48px; display: block; margin-top: -3px; margin-right: 1em;
 					 float: left; 
@@ -247,6 +258,15 @@ main                {position: absolute; left: 0; right: 0; top:0; bottom: 0; bo
 }
 
 @media (max-width: 600px){
-	#right			{left: 35%;}
+	#right			{left: 35%; width: 65%;}
 	#left			{width: 35%;}
+    
+    #right .results {min-width: 200px;}
+    main            {min-width: 330px;}
+    #settings       {max-width: 40%;}
+}
+
+@media (max-height: 440px){
+    #roller {position: absolute; bottom: 0; z-index: 999999999999; width: 100%;}
+    #left form ul:after {content: " "; display: block; height: 2.7em;}
 }
