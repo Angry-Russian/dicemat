@@ -110,7 +110,7 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
                      -webkit-transition: all 0.25s ease;}
 
 #left				{position: absolute; top: 0; left: 0; width: 256px;}
-#left form          {height: 100%;}
+#left #dicepool     {height: 100%;}
 #left form ul       {max-height: calc(100% - 3em - 1px); overflow-y:auto; overflow-x: hidden;}
 
 #left ul li			{min-height: 1.25em; text-shadow: #888 0 1px 2px;}
@@ -154,7 +154,7 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 #roll:hover			{background: linear-gradient(180deg, #ffcc77, #ffcc77 50%, #ffc060 50%, #ffbb55);}
 
 #settings			{padding: 0; height: 100%; width: 48px; display: block; margin-top: -3px; margin-right: 1em;
-					 float: left; 
+					 float: left;
 					 font-size: inherit;
 					 background: #eee url(settingsIcon.png) center center no-repeat;
                      background-size: contain;
@@ -252,6 +252,9 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 .is-collapsed			{height: 0; margin: 0; padding: 0; opacity: 0;}
 .is-collapsed *			{display: none!important;}
 
+#donate					{position: fixed; bottom: 0; left: 0;}
+#donate input			{padding: 0.3em;}
+
 @media (max-width: 850px){
 	body			{font-size: 70%;}
 	li#roller 		{font-size: 135%;}
@@ -260,7 +263,7 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 @media (max-width: 600px){
 	#right			{left: 35%; width: 65%;}
 	#left			{width: 35%;}
-    
+
     #right .results {min-width: 200px;}
     main            {min-width: 330px;}
     #settings       {max-width: 40%;}
