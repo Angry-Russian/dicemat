@@ -277,7 +277,11 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
     #settings       {max-width: 40%;}
 }
 
-@media (max-height: 440px){
-    #roller {position: absolute; bottom: 0; z-index: 999999999999; width: 100%;}
+@media (max-height: 460px){
+    #roller				{position: absolute; bottom: 0; z-index: 999999999999; width: 100%;}
+
     #left form ul:after {content: " "; display: block; height: 2.7em;}
+
+    #donate 			{display: none;}
+    #donate .message	{display: none;}
 }
