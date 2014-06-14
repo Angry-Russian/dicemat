@@ -3,7 +3,7 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
-html, body          {width: 100%; height: 100%;}
+html, body          {width: 100%; height: 100%; overflow: hidden;}
 body				{font-family: sans-serif; background: #eee; margin: 0; padding; 0;}
 input.diceInput		{margin: 0; border: 1px solid silver; background: #FFFFFF; text-align: center;}
 input:focus         {outline: none;}
@@ -96,6 +96,8 @@ li:hover .close		{visibility: visible;}
 #options h1         { padding: 0.5em; margin:0;}
 #options ul         {list-style: none; line-height: 36px; margin: 0; padding: 0 0 0 1.5em;}
 #options ul         {width: 256px;}
+#options a			{color: #e7e7e7; text-decoration: none;}
+#options a:hover	{color: #fff; text-decoration: underline;}
 #options.on+main    {/*left: 256px;*/
                      transform: translateX(256px);
                      -moz-transform: translateX(256px);
@@ -163,6 +165,8 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 #settings.on		{background-color: #e0e0e0;}
 
 
+#links				{position: absolute; bottom: 0;}
+#links a.error		{color: red;}
 
 #contact				{display: inline-block; position: fixed; top: 32px; right: 16px; opacity: 0.25; text-shadow: silver 0 1px 1px;}
 #contact:hover			{opacity: 1;}
@@ -252,7 +256,7 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 .is-collapsed			{height: 0; margin: 0; padding: 0; opacity: 0;}
 .is-collapsed *			{display: none!important;}
 
-#donate					{position: absolute; bottom: 0; left: 0; width: 100%; text-align: center;}
+#donate					{position: absolute; bottom: 1em; left: 0; width: 100%; text-align: center;}
 
 #donate .message		{position: relative; top: -26px; background: #333; color: #e7e7e7; padding: 16px 16px 0; opacity: 0;
 						 transition: opacity 0.2s, height 0.2s;
@@ -275,6 +279,12 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
     #right .results {min-width: 200px;}
     main            {min-width: 330px;}
     #settings       {max-width: 40%;}
+    html, body      {overflow: auto;}
+}
+
+@media (max-width: 400px){
+	#right			{left: 50%; width: 100%;}
+	#left			{width: 50%;}
 }
 
 @media (max-height: 460px){
