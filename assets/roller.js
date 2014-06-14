@@ -284,15 +284,18 @@ $(function(){
 			$('#targetNumber').val(7);
 			$("#total, #nhighest, #rerolls").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
+			ga('send', 'event', 'settings', 'set', 'exalted');
 		},setWod : function(e){
 			$("#threshold, #rerolls").prop('checked', true);
 			$('#targetNumber').val(8);
 			$("#total, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
+			ga('send', 'event', 'settings', 'set', 'wod');
 		},setDnd : function(e){
 			$("#total").prop('checked', true);
 			$("#threshold, #rerolls, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").attr('disabled', false);
+			ga('send', 'event', 'settings', 'set', 'D&D');
 		},
 
 
@@ -331,6 +334,7 @@ $(function(){
 			}
 		},userRename:function(e, data){
 			_.each(usersList.where({id:data.id}), function(u){u.save('name', data.name)});
+			ga('send', 'event', 'settings', 'rename', data.name);
 		},
 
 
@@ -413,6 +417,9 @@ $(function(){
 				rollsList.create(roll);
 				ws.send(JSON.stringify(roll));
 			}
+
+			ga('send', 'event', 'roll', 'click');
+
 			return false;
 		},
 
