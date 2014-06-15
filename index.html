@@ -2,17 +2,21 @@
 <html>
 <head>
 	<title>Dicemat - web dice roller</title>
+	<meta name="description" content="A dice rolling app for d6, d10 and d20 games. Built-in chat support allows the results to be shared to the entire play group."/>
+
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta content="width=device-width, height: device-height,
+	<meta content="width=device-width, height=device-height,
 				   initial-scale=1,
 				   maximum-scale=1,
 				   minimum-scale=1,
 				   user-scalable=no" name="viewport" />
 
+
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="http://backbonejs.org/backbone-min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.0.4.js"></script>
     <script src="assets/roller.js"></script>
     <link href="assets/style.css" rel="stylesheet" media="screen" type="text/css" />
 </head>
@@ -54,7 +58,7 @@
 <main id="roller">
 	<section id="left">
 		<form action="#" method="get" id="dicepool">
-			<h1><input type="button" class="diceInput" value="" id="settings"/>Dice</h1>
+			<h1><input type="button" class="dicemat-ui" value="" id="settings"/>Dice</h1>
 			<ul id="dice">
 				<!--li id="namer"><input type="text" name="desc" placeholder="Display Name" id="desc"/></li-->
 				<li class="d20"><label for="d4s">d4  </label><input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
@@ -81,27 +85,13 @@
 		</form>
 	</section>
 	<section id="right">
-		<!--ol id="guests">
-			<li class="plus">+
-				<ul class="dropdown is-collapsed">
-					<li class="connect">Connect to a player</li>
-					<li class="invite">invite a player</li>
-				</ul>
-			</li>
-		</ol-->
-		<h1>Results</h1><!--div id="contact">Got comments or suggestions? <a href="#" id="mail">Tell me about it</a>.</div-->
+		<ol id="guests">
+			<li class="plus">+</li>
+		</ol>
+		<h1>Results</h1>
 		<div id="viewport"><ul class="results" id="self" name="self"></ul></div>
 	</section>
 </main>
-<fieldset id="colorLegend">
-	<legend>Legend</legend>
-	<ul>
-		<li class="highest">X</li>
-		<li class="reroll">X</li>
-		<li class="good">X</li>
-		<li class="bad">X</li>
-	</ul>
-</fieldset>
 <ul id="notifications"></ul>
 
 
