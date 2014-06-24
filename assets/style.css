@@ -48,7 +48,7 @@ fieldset			{display: none;}
 
 
 
-.diceInput			{float: right; margin-right: 0.5em;}
+.diceInput			{float: right; margin-right: 0.5em; width: 10ex;}
 
 .good				{color: #5a1;}
 .double				{text-decoration: underline;}
@@ -94,7 +94,7 @@ li:hover .close		{visibility: visible;}
                      -moz-transition: width 0.35s;
                      -webkit-transition: width 0.35s;}
 #options h1         { padding: 0.5em; margin:0;}
-#options ul         {list-style: none; line-height: 36px; margin: 0; padding: 0 0 0 1.5em;}
+#options ul         {list-style: none; line-height: 36px; margin: 0; padding: 0 0 0 0.5em;}
 #options ul         {width: 256px;}
 #options a			{color: #e7e7e7; text-decoration: none;}
 #options a:hover	{color: #fff; text-decoration: underline;}
@@ -121,7 +121,8 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 					 left: 256px; bottom: 0; white-space: nowrap;
 					 overflow: auto; border-left: 3px double silver;}
 
-#options input      {border: 0; background: #484848; color: #f0f0f0; font-size: normal; display: inline-block;}
+#options input      {border: 0; margin: 2px; background: #484848; color: #f0f0f0; font-size: normal; display: inline-block;}
+#options input[type=number]{width: 6ex; padding: 0.3em 0 0.3em 0.3em;}
 #options input[type=button]{padding: 1em; cursor: pointer; border-radius: 0;}
 #options input:hover{background: #585858;}
 #wod                {margin: 0 1px;}

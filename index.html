@@ -31,13 +31,13 @@
       </li>
       <li>
         <input type="checkbox" id="xhighest" name="xhighest" title="Only count this many dice, which are the highest results"/>
-        <input type="text" id="nhighest" value="0" maxlength="3" size="2"/>
-        <label for="xhighest" title="Only count this many dice, which are the highest results"> highest</label>
+        <input type="number" id="nhighest" value="0" maxlength="3" size="2"/>
+        <label for="xhighest" title="Only count X highest results (e.g. roll 6 dice, pick the 2 highest results)"> highest</label>
       </li>
       <li>
         <input type="checkbox" id="threshold" name="threshold" title='Ignore dice that roll lower than this amount, count the number of "successes" (White Wolf)'/>
         <label for="threshold" title='Ignore dice that roll lower than this amount, count the number of "successes" (White Wolf)'>Target</label>
-        <input type="text" maxlength="2" size="2" value="7" id="targetNumber"/>
+        <input type="number" maxlength="2" size="2" value="7" id="targetNumber"/>
       </li>
       <li>
         <input type="checkbox" id="doubles" name="doubles" title='10s count twice'/>
@@ -46,7 +46,7 @@
       <li>
         <input type="checkbox" id="rerolls" name="rerolls" title='Reroll dice that match or exceed this value'/>
         <label for="rerolls" title='Reroll dice that match or exceed this value'>X-again</label>
-        <input type="text" maxlength="2" size="2" value="10" id="xagain"/>
+        <input type="number" maxlength="2" size="2" value="10" id="xagain"/>
       </li>
       <li><input type="button" value="Clear results" id="clear"/><input type="button" value="Show Hidden" id="show-hidden"/></li>
     </ul>
@@ -117,10 +117,12 @@
 	<%if(rules.get("total")){%><span class="ps"> :: <%-total%> total</span><%}%>
 	<span class="close" title="<%-(!hidden)?"hide":"show"%>">x</span>
 </script>
+
 <script type="text/html" id="notificationTemplate">
 	<h1><%=title%></h1>
 	<p><%=content%></p>
 </script>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

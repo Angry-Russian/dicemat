@@ -51,11 +51,20 @@ $(function(){
 
 	Backbone.sync = function(method, model){
 		var t = model.type||model.get("type");
+		
 		if(t === "settings"){
 			switch(method){
 				case "read":
 					var s = localStorage['settings'];
 					if(s) settings = new SettingsModel(JSON.parse(s));
+
+					if(settings.get('total')) $("#total").attr("checked", "checked");
+					if(settings.get('doubles')) $("#doubles").attr("checked", "checked");
+					if(settings.get('rerolls')) $("#rerolls").attr("checked", "checked").val(settings.get('rerolls'));
+					if(settings.get('xhighest')) $("#xhighest").attr("checked", "checked").val(settings.get('xhighest'));
+					if(settings.get('threshold')) $("#threshold").attr("checked", "checked").val(settings.get('threshold'));
+					//name		: $('#desc').val()
+
 					break;
 				case "create": model.id="settings"
 				case "update": localStorage['settings'] = model.toJSON(); break;
@@ -64,6 +73,7 @@ $(function(){
 			}
 			localStorage['settings'] = JSON.stringify(model);
 			return 0;
+
 		}else if(t === "list"){
 			switch(method){
 				case "read":
@@ -84,6 +94,7 @@ $(function(){
 				case "delete":
 				default: if(window.console && console.error) console.error("Unsupported method: " + method);
 			}
+			
 		}else if(t === "roll"){
 			switch(method){
 				case "create": model.id = model.get("order");
@@ -100,6 +111,7 @@ $(function(){
 		defaults:function(){
 			return {
 				xhighest: 0,
+				sort: false,
 				total: 0,
 				threshold: 0,
 				doubles: 0,
@@ -111,7 +123,9 @@ $(function(){
 			_.each(settings, function(value, key, list){
 				this[key] = value;
 			});
-		}});
+		}
+	});
+
 	settings = new SettingsModel;
 	settings.fetch();
 	$('#desc').val(settings.get('name'));
@@ -152,7 +166,8 @@ $(function(){
 		nextOrder:function(){
 			if(!this.length) return 1;
 			return this.last().get('order')+1;
-		},comparator: "order"});
+		},comparator: "order"
+	});
 	var rollsList = new List;
 
 	var RollView = Backbone.View.extend({
@@ -174,7 +189,8 @@ $(function(){
 
 		initialize:function(){
 			this.listenTo(this.model, 'change', this.render);
-		}});
+		}
+	});
 
 	var User = Backbone.Model.extend({
 		defaults: function(){
@@ -245,13 +261,13 @@ $(function(){
 			"click #settings" : "toggleOptions",
 			"swipe" : "toggleOptions",
 			"click #dice input" : "numberFocus",
-			"click input:checkbox" : "updateSettings",
+			//"click input:checkbox" : "updateSettings",
 			"click #clear" : "clearRolls",
 			"click #exalted" : "setExalted",
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
-			"change input:text" : "updateSettings",
+			"change input" : "updateSettings",
 			"submit #dicepool": "generate",
 			"keydown #desc": "selfRename",
 			"click #show-hidden" : "toggleHidden",
@@ -332,7 +348,7 @@ $(function(){
 		},
 
 
-		updateSettings: function(){
+		updateSettings: function(e){
 			settings.set({
 				total		: ($("#total").is(":checked"))		?1:0,
 				doubles		: ($("#doubles").is(":checked"))	?1:0,
@@ -342,6 +358,7 @@ $(function(){
 				name		: $('#desc').val()
 			});
 			settings.save();
+
 		},clearRolls:function(){
 			_.each(rollsList.shown(), function(t){t.toggle()});
 
