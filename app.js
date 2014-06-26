@@ -5,14 +5,11 @@ var io = require('socket.io')(http);
 var bp = require('body-parser');
 var port = 2500;
 
-console.log('Setting settings');
 app.set('views', __dirname + '/views');
 app.set('viev_engine', 'ejs');
 
-app.use(bp.urlencoded());
 app.get('/', function(req, res){
-	console.log('From', process.cwd(), 'looking for assets/index.html');
-	res.sendfile('index.html', {root: __dirname + "/assets"});
+	res.sendfile('assets/index.html');
 });
 app.use(express.static(__dirname + '/assets'));
 
@@ -71,5 +68,4 @@ io.on('connection', function(socket){
 
 http.listen(port, function(){
 	console.log('Listening on port', port);
-	console.log('Running in', process.cwd());
 });
