@@ -3,18 +3,18 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bp = require('body-parser');
+var port = 2500;
 
+console.log('Setting settings');
 app.set('views', __dirname + '/views');
 app.set('viev_engine', 'ejs');
-app.use(bp);
 
+app.use(bp.urlencoded());
 app.get('/', function(req, res){
-
-        res.send(200, {status:"Hello World!"});
-
+	console.log('From', process.cwd(), 'looking for assets/index.html');
+	res.sendfile('index.html', {root: __dirname + "/assets"});
 });
-
-app.use(express.static(__dirname + '/static'));
+app.use(express.static(__dirname + '/assets'));
 
 var names = {}, // socket.id : name
 	clients = {}; // name : socket.id
@@ -69,4 +69,7 @@ io.on('connection', function(socket){
         });
 });
 
-http.listen(2500);
+http.listen(port, function(){
+	console.log('Listening on port', port);
+	console.log('Running in', process.cwd());
+});
