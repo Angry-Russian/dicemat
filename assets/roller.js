@@ -10,27 +10,20 @@ $(function(){
 	function rand(n){
 		return Math.floor(Math.random()*n)
 	}
-	function reidentify(){
-		$('#viewport ul.results#self').attr('name',  $('#desc').val() || "Anonymous (self)");
-		ws.send('{"type":"identify", "name":"' + ($('#desc').val()||"Anonymous") + '"}');
-		settings.save('name', $('#desc').val())
-	}
+
 	function notify(title, text){
 		$('<li/>').html(notif({title:title, content:text})).addClass('notification')
 			.on('click', function(){$(this).remove();})
 			.appendTo('#notifications').hide().slideDown(300).delay(2000).fadeOut(300, function(){$(this).remove();})
 	}
+
 	function ask(text, placeholder, callback){
 		$('#addHost').fadeOut(200, function(){$(this).remove()})
 		$('<form id="addHost"/>').addClass('ask').attr('action', '#')
 			.append($('<span/>').text(text))
-			//.append('<br>')
 			.append('<input type="text" class="answer" placeholder="'+placeholder+'">')
-			//.append(
-			//	$('<div>')
-				.append('<button class="confirm">Ok</button>')
-				.append('<button class="cancel">Cancel</button>')
-			//)
+			.append('<button class="confirm">Ok</button>')
+			.append('<button class="cancel">Cancel</button>')
 			.on('click', '.confirm', function(e){
 				callback($('.ask .answer').val());
 				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
@@ -55,13 +48,23 @@ $(function(){
 
 			}).appendTo('body').hide().fadeIn(200).find('input').focus();
 	}
+
 	Backbone.sync = function(method, model){
 		var t = model.type||model.get("type");
+		
 		if(t === "settings"){
 			switch(method){
 				case "read":
 					var s = localStorage['settings'];
 					if(s) settings = new SettingsModel(JSON.parse(s));
+
+					if(settings.get('total')) $("#total").attr("checked", "checked");
+					if(settings.get('doubles')) $("#doubles").attr("checked", "checked");
+					if(settings.get('rerolls')) $("#rerolls").attr("checked", "checked").val(settings.get('rerolls'));
+					if(settings.get('xhighest')) $("#xhighest").attr("checked", "checked").val(settings.get('xhighest'));
+					if(settings.get('threshold')) $("#threshold").attr("checked", "checked").val(settings.get('threshold'));
+					//name		: $('#desc').val()
+
 					break;
 				case "create": model.id="settings"
 				case "update": localStorage['settings'] = model.toJSON(); break;
@@ -70,6 +73,7 @@ $(function(){
 			}
 			localStorage['settings'] = JSON.stringify(model);
 			return 0;
+
 		}else if(t === "list"){
 			switch(method){
 				case "read":
@@ -90,6 +94,7 @@ $(function(){
 				case "delete":
 				default: if(window.console && console.error) console.error("Unsupported method: " + method);
 			}
+			
 		}else if(t === "roll"){
 			switch(method){
 				case "create": model.id = model.get("order");
@@ -106,6 +111,7 @@ $(function(){
 		defaults:function(){
 			return {
 				xhighest: 0,
+				sort: false,
 				total: 0,
 				threshold: 0,
 				doubles: 0,
@@ -117,7 +123,9 @@ $(function(){
 			_.each(settings, function(value, key, list){
 				this[key] = value;
 			});
-		}});
+		}
+	});
+
 	settings = new SettingsModel;
 	settings.fetch();
 	$('#desc').val(settings.get('name'));
@@ -134,8 +142,7 @@ $(function(){
 				order: rollsList.nextOrder(),
 				hidden: false,
 				rules:settings,
-				results:[],
-				type: "roll"
+				results:[]
 			};
 		},
 
@@ -157,10 +164,10 @@ $(function(){
 			return this.without.apply(this, this.hidden());
 		},
 		nextOrder:function(){
-			console.log("length",this.length, (this.length)?this.last():1)
 			if(!this.length) return 1;
 			return this.last().get('order')+1;
-		},comparator: "order"});
+		},comparator: "order"
+	});
 	var rollsList = new List;
 
 	var RollView = Backbone.View.extend({
@@ -182,7 +189,8 @@ $(function(){
 
 		initialize:function(){
 			this.listenTo(this.model, 'change', this.render);
-		}});
+		}
+	});
 
 	var User = Backbone.Model.extend({
 		defaults: function(){
@@ -209,6 +217,7 @@ $(function(){
 		events:{
 			//"click .remove": "remove"
 		},remove:function(e, data){
+			diceRoller.$el.trigger("quit", {name: this.model.get("name")});
 			var that = this.$el;
 				that.hide(350, function(e){that.remove()});
 
@@ -232,6 +241,7 @@ $(function(){
 		events:{
 			//"remove": "remove"
 		}, remove:function(e, data){
+			diceRoller.$el.trigger("quit", {name: this.model.get("name")});
 			var that = this.$el;
 				that.hide(350, function(e){that.remove()});
 
@@ -251,17 +261,17 @@ $(function(){
 			"click #settings" : "toggleOptions",
 			"swipe" : "toggleOptions",
 			"click #dice input" : "numberFocus",
-			"click input:checkbox" : "updateSettings",
+			//"click input:checkbox" : "updateSettings",
 			"click #clear" : "clearRolls",
 			"click #exalted" : "setExalted",
 			"click #wod" : "setWod",
 			"click #dnd" : "setDnd",
 			"click #roll": "generate",
-			"change input:text" : "updateSettings",
+			"change input" : "updateSettings",
 			"submit #dicepool": "generate",
 			"keydown #desc": "selfRename",
 			"click #show-hidden" : "toggleHidden",
-			"connect" : "guestConnect",
+			"join" : "guestConnect",
 			"confirm" : "hostConnect",
 			"leave" : "guestLeave",
 			"rename" : "userRename",
@@ -338,7 +348,7 @@ $(function(){
 		},
 
 
-		updateSettings: function(){
+		updateSettings: function(e){
 			settings.set({
 				total		: ($("#total").is(":checked"))		?1:0,
 				doubles		: ($("#doubles").is(":checked"))	?1:0,
@@ -348,6 +358,7 @@ $(function(){
 				name		: $('#desc').val()
 			});
 			settings.save();
+
 		},clearRolls:function(){
 			_.each(rollsList.shown(), function(t){t.toggle()});
 
@@ -413,9 +424,9 @@ $(function(){
 
 			if(settings.get("xhighest")) results.sort(function(a, b){return (a===b)?0:(a>b)?-1:1});
 			if(rolled){
-				var roll = {results: results, rules: settings, type:"roll"};
+				var roll = {results: results, rules: settings};
 				rollsList.create(roll);
-				ws.send(JSON.stringify(roll));
+				ws.emit('roll', roll);
 			}
 
 			ga('send', 'event', 'roll', 'click');
@@ -431,58 +442,20 @@ $(function(){
 
 			rollsList.fetch();
 		}});
-	var diceRoller = new DiceRoller;
 
+	function reidentify(){
+		var n = $('#desc').val() || "Anonymous";
+		$('#viewport ul.results#self').attr('name', n + " (self)");
+		ws.emit('identify', n);
+		settings.save('name',n);
+	}
 
 	window.usersList = usersList;
-
-	window.ws = ws = new WebSocket('ws://horizonforge.com:8888');
-	ws.onopen = function(data){
-		reidentify();
-	}
-	ws.onclose = function(){
-		ws = new WebSocket('ws://horizonforge.com:8888');
-	}
-	ws.onerror = function(){
-	}
-	ws.onmessage = function(msg){
-		var req = JSON.parse(msg.data);
-		switch(req.type){
-			case "roll":
-				req.model = new Roll;
-				req.rules = new SettingsModel(req.rules);
-				_.each(usersList.where({id:req.id, type:"host"}), function(host){
-					host.rollsList.create({
-						results:req.results,
-						rules:req.rules,
-						type:"roll-remote"
-					});
-				});
-				//rollsList.create(req);
-				break;
-			case "connect":
-				diceRoller.$el.trigger("connect", req);
-				break;
-			case "confirm":
-				diceRoller.$el.trigger("confirm", req);
-				break;
-			case "leave":
-				usersList.remove(usersList.where({"id":req.id}));
-				diceRoller.$el.trigger("leave", req);
-				break;
-			case "rename":
-				diceRoller.$el.trigger("rename", req);
-				break;
-			case "quit":
-				usersList.remove(usersList.where({"id":req.id}));
-				diceRoller.$el.trigger("quit", req);
-				break;
-			default:
-				break;
-		}
+	var diceRoller = new DiceRoller,
+		ws = window.ws = io('http://ramblescript.com:2500');
 
 
-	}
+
 
 	$('body').on('click', function(e){
 		var t = $(e.target)
@@ -493,22 +466,55 @@ $(function(){
 			$('.dropdown').toggleClass('is-collapsed', true);
 		}
 	});
+
 	$('#desc').on("change", reidentify);
+
 	$('li.plus').on('click', function(){
-		$(this).find('ul').toggleClass('is-collapsed');
-	}).find('ul').on('click', '.connect', function(){
-		ask('Connect', 'Display Name', function(d){
-			if(d)ws.send(JSON.stringify({
-				type:'connect',
-				name:d
-			}));
+		ask('Join a Roller', 'Display Name', function(d){
+			if(d) ws.emit('join', d);
 		});
-	}).on('click', '.invite', function(){
-		ask('Invite', 'Display Name', function(d){
-			if(d)ws.send(JSON.stringify({
-				type:'invite',
-				name:d
-			}));
+
+	});
+
+
+
+
+	ws.on('connect', function(){
+		reidentify();
+	});
+	ws.on('disconnect', function(e){
+		diceRoller.$el.trigger("disconnect", e);
+		console.log('disconnect', e);
+	});
+	ws.on('roll', function(req){
+		console.log('roll', req);
+		req.model = new Roll;
+		req.rules = new SettingsModel(req.rules);
+		_.each(usersList.where({id:req.id, type:"host"}), function(host){
+			host.rollsList.create({
+				results:req.results,
+				rules:req.rules,
+				type:"roll-remote"
+			});
 		});
+	});
+	ws.on('confirm', function(e){
+		diceRoller.$el.trigger("confirm", e);
+	});
+	ws.on('join', function(e){
+		diceRoller.$el.trigger("join", e);
+		console.log('join', e);
+	});
+	ws.on('leave', function(e){
+		usersList.remove(usersList.where({"id":e.id}));
+		console.log('leave', e);
+	});
+	ws.on('quit', function(e){
+		usersList.remove(usersList.where({"id":e}));
+		console.log('quit', e);
+	});
+	ws.on('rename', function(e){
+		diceRoller.$el.trigger("rename", e);
+		console.log('rename', e);
 	});
 });
