@@ -19,12 +19,16 @@ main ul li:hover			 {background: #f7f7f7;}
 #right ul li:first-child 	 {color: #333; background: rgba(255, 255, 255, 0.85);}
 
 
-#guests				{margin: 0; padding: 0;}
-#guests > li		{width: 32px; height: 32px; background: #ccc; color: white; text-shadow: black 0 1px 2px;
+#guests				{margin-right: 1em; margin-bottom: 0;}
+#guests:before		{content:"rolling as:"; display: inline-block; color: silver;}
+#guests input       {border: none; border-bottom: 1px solid silver; background: none; text-align: right;
+                     font-size: 14pt;}
+/*#guests				{margin: 0; padding: 0;}
+/*#guests > li		{width: 32px; height: 32px; background: #ccc; color: white; text-shadow: black 0 1px 2px;
 					 margin: 8px 4px 0;
 					 text-align: center;
 					 line-height: 32px;
-					 box-shadow: rgba(0, 0, 0, 0.3) 0 2px 9px -3px;}
+					 box-shadow: rgba(0, 0, 0, 0.3) 0 2px 9px -3px;}*/
 #guests	> li:hover	{}
 
 #guests .plus		{cursor: pointer; border-radius: 4px; box-shadow: none; border: 1px solid silver; background: transparent; color: silver; text-shadow: none;}

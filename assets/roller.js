@@ -51,7 +51,7 @@ $(function(){
 
 	Backbone.sync = function(method, model){
 		var t = model.type||model.get("type");
-		
+
 		if(t === "settings"){
 			switch(method){
 				case "read":
@@ -94,7 +94,7 @@ $(function(){
 				case "delete":
 				default: if(window.console && console.error) console.error("Unsupported method: " + method);
 			}
-			
+
 		}else if(t === "roll"){
 			switch(method){
 				case "create": model.id = model.get("order");
@@ -236,26 +236,8 @@ $(function(){
 		}
 	});
 
-	var GuestView = Backbone.View.extend({
-		tagName:"li",
-		events:{
-			//"remove": "remove"
-		}, remove:function(e, data){
-			diceRoller.$el.trigger("quit", {name: this.model.get("name")});
-			var that = this.$el;
-				that.hide(350, function(e){that.remove()});
-
-		}, render:function(e){
-			this.$el.attr('name', this.model.get("name"));
-			return this;
-		}, initialize:function(e){
-			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.model, 'remove', this.remove);
-			this.$el.text(this.model.get('name')[0]);
-		}
-	});
-
 	var DiceRoller = Backbone.View.extend({
+		socketid:undefined,
 		el:$('#roller'),
 		events: {
 			"click #settings" : "toggleOptions",
@@ -271,11 +253,10 @@ $(function(){
 			"submit #dicepool": "generate",
 			"keydown #desc": "selfRename",
 			"click #show-hidden" : "toggleHidden",
-			"join" : "guestConnect",
-			"confirm" : "hostConnect",
+
+			"join" : "guestArrived",
 			"leave" : "guestLeave",
-			"rename" : "userRename",
-			"quit" : "hostLeave"
+			"rename" : "userRename"
 
 		},toggleOptions:function(e){
 			/*$('#options').toggle();
@@ -295,13 +276,17 @@ $(function(){
 			$("#total, #nhighest, #rerolls").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 			ga('send', 'event', 'settings', 'set', 'exalted');
-		},setWod : function(e){
+
+		},
+		setWod : function(e){
 			$("#threshold, #rerolls").prop('checked', true);
 			$('#targetNumber').val(8);
 			$("#total, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 			ga('send', 'event', 'settings', 'set', 'wod');
-		},setDnd : function(e){
+
+		},
+		setDnd : function(e){
 			$("#total").prop('checked', true);
 			$("#threshold, #rerolls, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").attr('disabled', false);
@@ -309,41 +294,29 @@ $(function(){
 		},
 
 
-		guestConnect: function(e, data){
-			notify(data.name, "Has come to watch.");
+		guestArrived: function(e, data){
 			var existingUser = usersList.where({name:data.name, id:data.id});
-			if(existingUser.length){
-				_.each(existingUser, function(u){
-					u.save({type:"host-guest"});
-				})
-			}else usersList.create({type:"guest", name:data.name, id:data.id});
+			notify(data.name || "Anonymous", "Joined room.");
 
-		},hostConnect: function(e, data){
-			console.log(1);
-			var existingUser = usersList.where({name:data.name, id:data.id});
-			notify(data.name, "Has been added to your hosts.");
-			if(existingUser.length){
+			if(!existingUser.length){
+				usersList.create({type:"host", name:data.name, id:data.id});//*/
+			}
 
-				_.each(existingUser, function(u){
-					u.save({type:"host-guest"});
-				})
-			}else usersList.create({type:"host", name:data.name, id:data.id});
+		},guestLeave: function(e, id){
+			console.log(e, id);
+			var user = usersList.where({"id":id});
+			usersList.remove(user);
+			notify(user.name || "Anonymous", "Went away.");
 
-		},guestLeave: function(e, data){
-			notify(data.name, "Went away.");
-
-		},hostLeave: function(e, data){
-			notify(data.name, "Disconnected.");
-			var n = parseInt(this.$('#viewport').attr('data-count'))-1;
-			if(!n ||  isNaN(n) || n <= 1) this.$('#viewport').removeAttr('data-count');
-			else this.$('#viewport').attr('data-count', n);
 		},selfRename:function(e, data){
 			if(e.which===13){
 				$('#desc').blur();
 				return false;
 			}
+
 		},userRename:function(e, data){
-			_.each(usersList.where({id:data.id}), function(u){u.save('name', data.name)});
+			var user = usersList.findWhere({id:data.id});
+			if(user) user.set({name: data.name});
 			ga('send', 'event', 'settings', 'rename', data.name);
 		},
 
@@ -367,33 +340,16 @@ $(function(){
 			this.$('.results#self').prepend(view.render().$el);
 
 		},addUser:function(usr){
-			var view;
-			if(usr.get('type').match(/host/)){
-				usr.rollsList = new List;
-				view = new HostView({model:usr});
-				this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
-			}
-
-			if(usr.get('type').match(/guest/)) {
-				view = new GuestView({model:usr});
-				this.$('#guests').prepend(view.render().$el);
-			}
+			usr.rollsList = new List;
+			var view = new HostView({model:usr});
+			this.$('#viewport').attr('data-count', usersList.length + 1).append(view.render().$el);
 
 		},updateUser:function(usr){
-			console.log(usr);
-			if(usr.get('type') === "host-guest"){
-				if(usr._previousAttributes.type === "host"){
-					var view = new GuestView({model:usr});
-					this.$('#guests').prepend(view.render().$el);
-				}else if(usr._previousAttributes.type === "guest"){
-					usr.rollsList = new List;
-					var view = new HostView({model:usr});
-					this.$('#viewport').attr('data-count', (this.$('#viewport').attr('data-count')||1)+1).append(view.render().$el);
-				}
-			}
+			// nothing to do for now.
 
 		},roll:function(sides){
 			return Math.ceil(Math.random() * sides);
+
 		},generate:function(e){
 			e.preventDefault();
 
@@ -434,11 +390,18 @@ $(function(){
 			return false;
 		},
 
-		render:function(){},
+		render:function(){
+			var len = usersList.length + 1;
+			if(len===1)
+				this.$('#viewport').removeAttr('data-count');
+			else
+				this.$('#viewport').attr('data-count', len);
+		},
 		initialize: function(){
 			this.listenTo(rollsList, 'add', this.addRoll);
 			this.listenTo(usersList, 'add', this.addUser);
-			this.listenTo(usersList, 'change', this.updateUser)
+			this.listenTo(usersList, 'remove', this.render);
+			this.listenTo(usersList, 'change', this.updateUser);
 
 			rollsList.fetch();
 		}});
@@ -452,7 +415,8 @@ $(function(){
 
 	window.usersList = usersList;
 	var diceRoller = new DiceRoller,
-		ws = window.ws = io('http://ramblescript.com:2500');
+		//ws = window.ws = io('http://ramblescript.com:2500');
+		ws = window.ws = io('http://localhost:2500');
 
 
 
@@ -469,23 +433,11 @@ $(function(){
 
 	$('#desc').on("change", reidentify);
 
-	$('li.plus').on('click', function(){
-		ask('Join a Roller', 'Display Name', function(d){
-			if(d) ws.emit('join', d);
-		});
-
+	$(window).on('hashchange', function(e){
+		ws.emit("join", window.location.hash.slice(1));
 	});
 
 
-
-
-	ws.on('connect', function(){
-		reidentify();
-	});
-	ws.on('disconnect', function(e){
-		diceRoller.$el.trigger("disconnect", e);
-		console.log('disconnect', e);
-	});
 	ws.on('roll', function(req){
 		console.log('roll', req);
 		req.model = new Roll;
@@ -498,23 +450,54 @@ $(function(){
 			});
 		});
 	});
-	ws.on('confirm', function(e){
-		diceRoller.$el.trigger("confirm", e);
-	});
-	ws.on('join', function(e){
-		diceRoller.$el.trigger("join", e);
+ 	ws.on('join', function(e){
 		console.log('join', e);
+		diceRoller.$el.trigger("join", e);
 	});
 	ws.on('leave', function(e){
-		usersList.remove(usersList.where({"id":e.id}));
 		console.log('leave', e);
-	});
-	ws.on('quit', function(e){
-		usersList.remove(usersList.where({"id":e}));
-		console.log('quit', e);
+		diceRoller.$el.trigger("leave", e);
 	});
 	ws.on('rename', function(e){
-		diceRoller.$el.trigger("rename", e);
 		console.log('rename', e);
+		diceRoller.$el.trigger("rename", e);
 	});
+	ws.on('connect', function(){
+		reidentify();
+		if(window.location.hash && window.location.hash!=="#")
+			ws.emit('join', window.location.hash);
+	});
+	ws.on('disconnect', function(e){
+		console.log('disconnect', e);
+		diceRoller.$el.trigger("disconnect", e);
+	});
+	ws.on('err', function(data){
+		console.error(data);
+	});
+	ws.on('self', function(name){
+		console.log('room', name);
+		diceRoller.socketid = name;
+		if(!window.location.hash || window.location.hash === "#")
+			window.location.hash = name;
+	});
+	ws.on('memberlist', function(members){
+		console.log('Memberlist:', members, arguments);
+		// TODO: diceRoller.$el.trigger("memberlist", members);
+		var filter = [];
+		for(var i in members){
+			filter.push(i);
+			if(i !== diceRoller.socketid){
+				var existingUser = usersList.findWhere({id:i});
+				if(!existingUser) usersList.create({type:"host", name:members[i], id:i});
+			}
+		}
+
+		usersList.forEach(function(user){
+			if(filter.indexOf(user.id)<0)
+				userList.remove(user);
+		})
+	});
+	reidentify();
+
+	window.UserList = UserList;
 });

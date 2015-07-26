@@ -13,7 +13,7 @@
 				   user-scalable=no" name="viewport" />
 
 
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="http://backbonejs.org/backbone-min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.0.4.js"></script>
@@ -60,7 +60,7 @@
 		<form action="#" method="get" id="dicepool">
 			<h1><input type="button" class="dicemat-ui" value="" id="settings"/>Dice</h1>
 			<ul id="dice">
-				<!--li id="namer"><input type="text" name="desc" placeholder="Display Name" id="desc"/></li-->
+				<!--input type="text" name="desc" placeholder="Display Name" id="desc"/></li-->
 				<li class="d20"><label for="d4s">d4  </label><input type="number" min="0" max="999" id="d4s" class="diceInput" maxlength="3" size="4" value="0" /></li>
 				<li class="d20"><label for="d6s">d6  </label><input type="number" min="0" max="999" id="d6s" class="diceInput" maxlength="3" size="4" value="0" /></li>
 				<li class="d20"><label for="d8s">d8  </label><input type="number" min="0" max="999" id="d8s" class="diceInput" maxlength="3" size="4" value="0" /></li>
@@ -86,7 +86,8 @@
 	</section>
 	<section id="right">
 		<ol id="guests">
-			<li class="plus">+</li>
+			<!--li class="plus">+</li-->
+			<li><input type="text" placeholder="Anonymous" id="desc" size="16" maxlength="25"/></li>
 		</ol>
 		<h1>Results</h1>
 		<div id="viewport"><ul class="results" id="self" name="self"></ul></div>
