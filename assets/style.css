@@ -214,6 +214,8 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 						 -moz-transition: border-radius 0.35s, border-width 0.35s, width 0.15s;
 						 -webkit-transition: border-radius 0.35s, border-width 0.35s, width 0.15s;}
 
+.results li				{padding: 0.5em 1em;}
+
 #viewport[data-count="1"] .results	{width: 100%!important;}
 #viewport[data-count="2"] .results	{width: 48.5%!important;}
 #viewport[data-count="3"] .results	{width: 30%!important;}

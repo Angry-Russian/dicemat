@@ -415,8 +415,8 @@ $(function(){
 
 	window.usersList = usersList;
 	var diceRoller = new DiceRoller,
-		//ws = window.ws = io('http://ramblescript.com:2500');
-		ws = window.ws = io('http://localhost:2500');
+		ws = window.ws = io('http://ramblescript.com:2500');
+		//ws = window.ws = io('http://localhost:2500');
 
 
 
@@ -497,7 +497,11 @@ $(function(){
 				userList.remove(user);
 		})
 	});
+	ws.on('chat', function(member, message){
+		// -- chatCollection.create({id:user, text:message});
+		console.log(user, 'says', message);
+	});
 	reidentify();
-
+	$(window).trigger('hashchange');
 	window.UserList = UserList;
 });
