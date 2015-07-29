@@ -28,6 +28,12 @@ io.on('connection', function(socket){
 		}
 	});
 
+	socket.on('chat', function(data){
+		for(var i in socket.rooms){
+			io.to(socket.rooms[i]).emit('chat', socket.id, data);
+		}
+	});
+
 	socket.on('identify', function(name){
 		console.log('identifying', socket.id, 'as', name);
 		if(clients[name] || name === 'Anonymous')

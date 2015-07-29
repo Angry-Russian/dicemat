@@ -25,28 +25,61 @@ $(function(){
 			.append('<button class="confirm">Ok</button>')
 			.append('<button class="cancel">Cancel</button>')
 			.on('click', '.confirm', function(e){
-				callback($('.ask .answer').val());
+				if(callback) callback($('.ask .answer').val());
 				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
 				return false;
 
 			}).on('click', '.cancel', function(e){
-				callback(null);
+				if(callback) callback(null);
 				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
 				return false;
 
 			}).on('submit', function(e){
-				callback($('.ask .answer').val());
+				if(callback) callback($('.ask .answer').val());
 				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
 				return false;
 
 			}).on('keydown', function(e){
 				if(e.which === 27){
-					callback(null);
+					if(callback) callback(null);
 					$(this).fadeOut(200, function(){$(this).remove();});
 					return false;
 				}
 
 			}).appendTo('body').hide().fadeIn(200).find('input').focus();
+	}
+
+	function present(text, placeholder, callback){
+		$('#addHost').fadeOut(200, function(){$(this).remove()})
+		$('<form id="addHost"/>').addClass('ask').attr('action', '#')
+			.append($('<span/>').text(text))
+			.append('<input type="text" class="answer" value="'+placeholder+'">')
+			.append('<button class="confirm">Ok</button>')
+			.on('click', '.confirm', function(e){
+				if(callback) callback($('.ask .answer').val());
+				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
+				return false;
+
+			}).on('submit', function(e){
+				if(callback) callback($('.ask .answer').val());
+				$(this).parents('.ask').fadeOut(200, function(){$(this).remove();});
+				return false;
+
+			}).on('keydown', function(e){
+				if(e.which === 27){
+					if(callback) callback(null);
+					$(this).fadeOut(200, function(){$(this).remove();});
+					return false;
+				}
+
+			}).appendTo('body').hide().fadeIn(200).find('input').focus().get(0).setSelectionRange(0, 1.9999999999e+20);
+	}
+
+	function reidentify(){
+		var n = $('#desc').val() || "Anonymous";
+		$('#viewport ul.results#self').attr('name', n + " (self)");
+		ws.emit('identify', n);
+		settings.save('name',n);
 	}
 
 	Backbone.sync = function(method, model){
@@ -275,6 +308,7 @@ $(function(){
 			$('#targetNumber').val(7);
 			$("#total, #nhighest, #rerolls").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
+			this.updateSettings();
 			ga('send', 'event', 'settings', 'set', 'exalted');
 
 		},
@@ -283,6 +317,7 @@ $(function(){
 			$('#targetNumber').val(8);
 			$("#total, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
+			this.updateSettings();
 			ga('send', 'event', 'settings', 'set', 'wod');
 
 		},
@@ -290,6 +325,7 @@ $(function(){
 			$("#total").prop('checked', true);
 			$("#threshold, #rerolls, #nhighest, #doubles").prop('checked', false);
 			$(".diceInput").attr('disabled', false);
+			this.updateSettings();
 			ga('send', 'event', 'settings', 'set', 'D&D');
 		},
 
@@ -406,13 +442,6 @@ $(function(){
 			rollsList.fetch();
 		}});
 
-	function reidentify(){
-		var n = $('#desc').val() || "Anonymous";
-		$('#viewport ul.results#self').attr('name', n + " (self)");
-		ws.emit('identify', n);
-		settings.save('name',n);
-	}
-
 	window.usersList = usersList;
 	var diceRoller = new DiceRoller,
 		ws = window.ws = io('http://ramblescript.com:2500');
@@ -429,6 +458,10 @@ $(function(){
 			});
 			$('.dropdown').toggleClass('is-collapsed', true);
 		}
+	}).on('click', '#share', function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		present('Share this link to roll with your friends', window.location.href);
 	});
 
 	$('#desc').on("change", reidentify);
@@ -437,6 +470,7 @@ $(function(){
 		ws.emit("join", window.location.hash.slice(1));
 	});
 
+	var chatTemplate = _.template($('#chatTemplate').html());
 
 	ws.on('roll', function(req){
 		console.log('roll', req);
@@ -498,7 +532,9 @@ $(function(){
 		})
 	});
 	ws.on('chat', function(member, message){
-		// -- chatCollection.create({id:user, text:message});
+		$('#chat .history').append(chatTemplate({
+			user:member, message:message
+		}));
 		console.log(user, 'says', message);
 	});
 	reidentify();

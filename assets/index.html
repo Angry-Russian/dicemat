@@ -88,6 +88,7 @@
 		<ol id="guests">
 			<!--li class="plus">+</li-->
 			<li><input type="text" placeholder="Anonymous" id="desc" size="16" maxlength="25"/></li>
+			<li><img id="share" src="glyphicons/glyphicons-309-share-alt.png" title="share" alt="share button"/></li>
 		</ol>
 		<h1>Results</h1>
 		<div id="viewport"><ul class="results" id="self" name="self"></ul></div>
@@ -124,12 +125,24 @@
 	<p><%=content%></p>
 </script>
 
+<script type="text/html" id="chatTemplate">
+	<li>
+		<q cite="<%-user%>"><%-message%></q></li>
+</script>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
+  
+  oldga = ga;
+  ga = function(){
+  	// analytics spam is a thing. ugh.
+  	// block websites from advertizing their shit in your analytics stats
+  	if(!/[.]*\.(co|org|net|info)/i.test(arguments[2]))
+  		oldga.apply(window, arguments);
+  }
   ga('create', 'UA-26798902-1', 'auto');
   ga('send', 'pageview');
 
