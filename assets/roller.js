@@ -276,7 +276,7 @@ $(function(){
 			"click #settings" : "toggleOptions",
 			"swipe" : "toggleOptions",
 			"click #dice input" : "numberFocus",
-			//"click input:checkbox" : "updateSettings",
+			"click input:checkbox" : "updateSettings",
 			"click #clear" : "clearRolls",
 			"click #exalted" : "setExalted",
 			"click #wod" : "setWod",
@@ -304,9 +304,11 @@ $(function(){
 
 
 		setExalted : function(e){
-			$("#threshold, #doubles").prop('checked', true);
+			$("#threshold, #double").prop('checked', true);
 			$('#targetNumber').val(7);
+			$('#doubles').val(10);
 			$("#total, #nhighest, #rerolls").prop('checked', false);
+			
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 			this.updateSettings();
 			ga('send', 'event', 'settings', 'set', 'exalted');
@@ -315,7 +317,7 @@ $(function(){
 		setWod : function(e){
 			$("#threshold, #rerolls").prop('checked', true);
 			$('#targetNumber').val(8);
-			$("#total, #nhighest, #doubles").prop('checked', false);
+			$("#total, #nhighest, #double").prop('checked', false);
 			$(".diceInput").not("#d10s").val(0).attr('disabled', true);
 			this.updateSettings();
 			ga('send', 'event', 'settings', 'set', 'wod');
@@ -359,8 +361,9 @@ $(function(){
 
 		updateSettings: function(e){
 			settings.set({
+				sort		: ($("#sort").is(":checked"))		?1:0,
 				total		: ($("#total").is(":checked"))		?1:0,
-				doubles		: ($("#doubles").is(":checked"))	?1:0,
+				doubles		: ($("#double").is(":checked"))		?parseInt($("#doubles").val()):0,
 				rerolls		: ($("#rerolls").is(":checked"))	?parseInt($("#xagain").val()):0,
 				xhighest	: ($("#xhighest").is(":checked"))	?parseInt($("#nhighest").val()):0,
 				threshold	: ($("#threshold").is(":checked"))	?parseInt($("#targetNumber").val()):0,
@@ -417,8 +420,10 @@ $(function(){
 			if(settings.get("xhighest")) results.sort(function(a, b){return (a===b)?0:(a>b)?-1:1});
 			if(rolled){
 				var roll = {results: results, rules: settings};
+				if(settings.get("sort")) roll.results.sort(function(a,b){return b-a});
 				rollsList.create(roll);
 				ws.emit('roll', roll);
+				console.log(roll);
 			}
 
 			ga('send', 'event', 'roll', 'click');
@@ -443,9 +448,9 @@ $(function(){
 		}});
 
 	window.usersList = usersList;
-	var diceRoller = new DiceRoller,
-		ws = window.ws = io('http://ramblescript.com:2500');
-		//ws = window.ws = io('http://localhost:2500');
+	var diceRoller = new DiceRoller;
+	ws = window.ws = io('http://ramblescript.com:2500');
+	/*/ws = window.ws = io('http://localhost:2500');//*/
 
 
 
@@ -537,6 +542,7 @@ $(function(){
 		}));
 		console.log(user, 'says', message);
 	});
+	
 	reidentify();
 	$(window).trigger('hashchange');
 	window.UserList = UserList;

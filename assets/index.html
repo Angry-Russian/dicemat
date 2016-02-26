@@ -27,7 +27,11 @@
       <li><input type="button" id="exalted" value="Exalted"/><input type="button" id="wod" value="WoD"/><input type="button" id="dnd" value="D&D"/></li>
       <li>
         <input type="checkbox" id="total" name="total" title="Sum-up the total value of the roll (e.g. D&D damage)">
-        <label for="total"  title="Sum-up the total value of the roll (e.g. D&D damage)">Total</label>
+        <label for="total"  title="Sum-up the total value of the roll (e.g. D&D damage)">Sum</label>
+      </li>
+      <li>
+        <input type="checkbox" id="sort" name="sort" title="Sum-up the total value of the roll (e.g. D&D damage)">
+        <label for="total"  title="Sum-up the total value of the roll (e.g. D&D damage)">Sort</label>
       </li>
       <li>
         <input type="checkbox" id="xhighest" name="xhighest" title="Only count this many dice, which are the highest results"/>
@@ -40,8 +44,9 @@
         <input type="number" maxlength="2" size="2" value="7" id="targetNumber"/>
       </li>
       <li>
-        <input type="checkbox" id="doubles" name="doubles" title='10s count twice'/>
-        <label for="doubles" title='10s count twice'>Rule of 10</label>
+        <input type="checkbox" id="double" name="double" title='10s count twice'/>
+        <label for="doubles" title='10s count twice'>double</label>
+        <input type="number" maxlength="2" size="2" value="10" id="doubles"/>
       </li>
       <li>
         <input type="checkbox" id="rerolls" name="rerolls" title='Reroll dice that match or exceed this value'/>
@@ -106,7 +111,7 @@
 		if(roll === 1)												{c = "bad";}
 		if(roll === 20)												{c = "good";}
 		if(rules.get("threshold") && roll>= rules.get("threshold"))	{c = "good"; successes++;}
-		if(rules.get("doubles") && roll === 10)						{c += " double"; successes++;}
+		if(rules.get("doubles") && roll >= rules.get("doubles"))	{c += " double"; successes++;}
 		if(rules.get("rerolls")>1 && roll>=rules.get("rerolls")) 	{c += " reroll";}
 		if(key < rules.get("xhighest"))								{c += " highest";}
 
