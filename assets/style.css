@@ -63,16 +63,18 @@ fieldset			{display: none;}
 
 .reload				{cursor: pointer;}
 
+.link,
 .close				{cursor: pointer;
 					 visibility: hidden;
 					 user-select: none;
 					 -moz-user-select: none;
 					 -webkit-user-select: none;
 					 -ms-user-select: none;
-					 font-family: Open-sans, sans-serif;
-					 float: right; color: #999; font-size: 10pt; text-shadow: #999 0 -1px 2px; margin: 0 1em 0 0; font-weight: 400; display: inline-block; text-align: center; width: 32px; height: 32px;}
+					 float: right; color: #999; font-size: 10pt; /*text-shadow: #999 0 -1px 2px; */margin: 4px 0.5em 0 0.5em; font-weight: 400; display: inline-block;}
+li:hover .link,
 li:hover .close		{visibility: visible;}
 .is-hidden .close	{color: #fff; visibility: visible;}
+.link:hover,
 .close:hover		{color: #333;}
 
 #notifications		{position: fixed; right: 0; bottom: 0; list-style: none;}
@@ -102,8 +104,7 @@ li:hover .close		{visibility: visible;}
 #options ul         {width: 256px;}
 #options a			{color: #e7e7e7; text-decoration: none;}
 #options a:hover	{color: #fff; text-decoration: underline;}
-#options.on+main    {/*left: 256px;*/
-                     transform: translateX(256px);
+#options.on+main    {transform: translateX(256px);
                      -moz-transform: translateX(256px);
                      -webkit-transform: translateX(256px);
 }
