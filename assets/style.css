@@ -20,7 +20,7 @@ main ul li:hover			 {background: #f7f7f7;}
 
 
 #guests				{margin-right: 1em; margin-bottom: 0;}
-#guests:before		{content:"rolling as:"; display: inline-block; color: silver;}
+#guests:before		{content:"Display Name:"; display: inline-block; color: silver;}
 #guests input       {border: none; border-bottom: 1px solid silver; background: none; text-align: right;
                      font-size: 14pt;}
 /*#guests				{margin: 0; padding: 0;}
@@ -279,6 +279,7 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
 @media (max-width: 850px){
 	body			{font-size: 70%;}
 	li#roller 		{font-size: 135%;}
+    #guests input	{width: 150px;}
 }
 
 @media (max-width: 600px){
@@ -289,15 +290,19 @@ main                {position: absolute; left: 0; top:0; border-left: white; wid
     main            {min-width: 330px;}
     #settings       {max-width: 40%;}
     html, body      {overflow: auto;}
+
+    #guests input	{width: 100px;}
+    #guests:before	{content:"Name:";}
 }
 
 @media (max-width: 400px){
 	#right			{left: 50%; width: 100%;}
 	#left			{width: 50%;}
+    #guests input	{width: auto;}
 }
 
 @media (max-height: 460px){
-    #roller				{position: absolute; bottom: 0; z-index: 999999999999; width: 100%;}
+    #roller				{position: absolute; bottom: 0; width: 100%;}
 
     #left form ul:after {content: " "; display: block; height: 2.7em;}
 
