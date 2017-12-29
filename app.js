@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = process.env.PORT || 2500;
+var port = process.env.PORT || 80;
 var mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
