@@ -9,17 +9,17 @@ var ObjectId = require('mongodb').ObjectID;
 
 var db = null;
 
-mongo.connect('mongodb://localhost:27017/dicemat', function(err, database){
+/*mongo.connect('mongodb://localhost:27017/dicemat', function(err, database){
 	if(!err) db = database;
 	else console.log('[ERROR]:', err);
-});
+});//*/
 
 
 app.set('views', __dirname + '/views');
 app.set('viev_engine', 'ejs');
 
 app.get('/', function(req, res){
-	res.sendfile('assets/index.html');
+	res.sendfile(__dirname + '/assets/index.html');
 });
 
 app.get('/generate/:id', function(req,res){
@@ -110,7 +110,6 @@ io.on('connection', function(socket){
 				broadcastRoll(socket, data);
 			});
 		} else {
-			console.log('[ERROR]: No DB connection :(')
 			broadcastRoll(socket, data);
 		}
 	});
@@ -177,7 +176,9 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('disconnect', function(s){
-		clients[names[socket.id]] =	names[socket.id] = undefined;
+		clients[names[socket.id]] = names[socket.id] = undefined;
+		delete clients[names[socket.id]];
+		delete names[socket.id];
 		io.to(socket.id).emit('quit', socket.id)
 		for(var room in socket.rooms){
 			io.to(socket.rooms[room]).emit('leave', socket.id);
