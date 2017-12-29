@@ -27,7 +27,6 @@ app.get('/generate/:id', function(req,res){
 	
 	if(db) db.collection('rolls').findOne({_id:id}, function(err, roll){
 		//build SVG string
-		console.log(roll.rules);
 		var dataWidth = 15;
 		var fontHeight = 10;
 		var lineHeight = 14;
@@ -121,7 +120,7 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('identify', function(name){
-		console.log('identifying', socket.id, 'as', name);
+		console.log("["+(new Date()).toLocaleString() + "]", 'identifying', socket.id, 'as', name);
 		if(clients[name] || name === 'Anonymous')
 			socket.emit('err', 'That name is already taken.');
 		else{
@@ -141,7 +140,7 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('join', function(room){
-		console.log('Adding', socket.id, 'to room', room);
+		console.log("["+(new Date()).toLocaleString() + "]", 'Adding', socket.id, 'to room', room);
 
 		// leave prior rooms
 		for(var i in socket.rooms){
@@ -161,7 +160,7 @@ io.on('connection', function(socket){
 			memberInfo[id] = names[id] || "Anonymous";
 		}
 
-		console.log(memberInfo);
+		//console.log(memberInfo);
 		socket.join(room);
 		// tell members that a new member has joined
 		socket.broadcast.to(room).emit('join', {
@@ -183,7 +182,7 @@ io.on('connection', function(socket){
 		for(var room in socket.rooms){
 			io.to(socket.rooms[room]).emit('leave', socket.id);
 		}
-		console.log('disconnect ('+socket.id+'), leaving from', socket.rooms);
+		console.log("["+(new Date()).toLocaleString() + "]", 'disconnect ('+socket.id+'), leaving from', socket.rooms);
 	});
 });
 
