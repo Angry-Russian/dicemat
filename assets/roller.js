@@ -164,9 +164,6 @@ $(function(){
 	$('#desc').val(settings.get('name'));
 
 
-
-
-
 	var Roll = Backbone.Model.extend({
 
 		defaults:function(){
@@ -449,10 +446,7 @@ $(function(){
 
 	window.usersList = usersList;
 	var diceRoller = new DiceRoller;
-	ws = window.ws = io('http://ramblescript.com:2500');
-	/*/ws = window.ws = io('http://localhost:2500');//*/
-
-
+	ws = window.ws = io(location.origin);
 
 
 	$('body').on('click', function(e){
