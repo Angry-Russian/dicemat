@@ -2,8 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var bp = require('body-parser');
-var port = 2500;
+var port = process.env.PORT || 2500;
 var mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
@@ -13,10 +12,6 @@ var db = null;
 	if(!err) db = database;
 	else console.log('[ERROR]:', err);
 });//*/
-
-
-app.set('views', __dirname + '/views');
-app.set('viev_engine', 'ejs');
 
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/assets/index.html');
@@ -89,7 +84,7 @@ app.get('/generate/:id', function(req,res){
 		console.log('[ERROR]: Nod DB connection >:|');
 		res.status(400).send("No database connection. This is pretty bad.");
 	}
-})
+});
 
 app.use(express.static(__dirname + '/assets'));
 
@@ -195,8 +190,3 @@ function broadcastRoll(socket, data){
 		socket.broadcast.to(socket.rooms[i]).emit('roll', data);
 	}
 }
-
-/*
-- Generate images from results (save rolls in db)
-- option to sort dice
-*/
