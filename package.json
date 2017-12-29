@@ -4,6 +4,10 @@
   "version": "0.9.0",
   "description": "A simple diceroller webapp with multi-user support using socket.io",
   "author": "Dmitri Kolytchev",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
     "express": "~4.4.3",
     "mongodb": "^2.1.7",
